@@ -1,5 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+
+jest.mock('@hello-pangea/dnd', () => ({
+  Draggable: ({ children }: any) =>
+    children({ innerRef: () => {}, draggableProps: {}, dragHandleProps: {} }, { isDragging: false }),
+}));
+
 import { Card } from './Card';
 import type { Card as CardType } from '@/lib/types';
 
@@ -20,12 +26,12 @@ const mockCard: CardType = {
 
 describe('Card', () => {
   it('renders card summary', () => {
-    render(<Card card={mockCard} onClick={() => {}} />);
+    render(<Card card={mockCard} index={0} onClick={() => {}} />);
     expect(screen.getByText('Build login page')).toBeInTheDocument();
   });
 
   it('renders priority badge', () => {
-    render(<Card card={mockCard} onClick={() => {}} />);
+    render(<Card card={mockCard} index={0} onClick={() => {}} />);
     expect(screen.getByText('high')).toBeInTheDocument();
   });
 });

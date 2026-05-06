@@ -1,3 +1,4 @@
+import { Droppable } from '@hello-pangea/dnd';
 import styles from './Column.module.css';
 import { Card } from './Card';
 import { AddCardButton } from './AddCardButton';
@@ -28,16 +29,26 @@ export function Column({ stage, stageIndex, cards, users, onCardClick, onAddCard
         <span className={styles.title} style={{ color: colors.color }}>{stage.name}</span>
         <span className={styles.count}>{cards.length}</span>
       </div>
-      <div className={styles.cards}>
-        {cards.map((card) => (
-          <Card
-            key={card.id}
-            card={card}
-            assignee={users.find((u) => u.id === card.assigneeId)}
-            onClick={onCardClick}
-          />
-        ))}
-      </div>
+      <Droppable droppableId={stage.id}>
+        {(provided) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={styles.cards}
+          >
+            {cards.map((card, i) => (
+              <Card
+                key={card.id}
+                card={card}
+                index={i}
+                assignee={users.find((u) => u.id === card.assigneeId)}
+                onClick={onCardClick}
+              />
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
       <AddCardButton onClick={() => onAddCard(stage.id)} />
     </div>
   );
