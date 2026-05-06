@@ -6,7 +6,6 @@
     "moduleResolution": "bundler",
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "baseUrl": ".",
     "paths": { "@/*": ["./src/*"] },
     "incremental": true,
     "plugins": [{ "name": "next" }]
