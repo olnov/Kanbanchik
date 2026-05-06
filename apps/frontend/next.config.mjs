@@ -11,9 +11,7 @@ const nextConfig = {
     ? 'standalone'
     : undefined,
   // Required for standalone output to trace deps from the monorepo root
-  experimental: {
-    outputFileTracingRoot: path.join(__dirname, '../../'),
-  },
+  outputFileTracingRoot: path.join(__dirname, '../../'),
 };
 
 export default nextConfig;
