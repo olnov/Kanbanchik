@@ -1,0 +1,30 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.1s, opacity 0.1s;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--color-indigo);
+  color: #fff;
+}
+.primary:hover { opacity: 0.9; }
+
+.ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+.ghost:hover { background: var(--color-bg); }
+
+.danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+.danger:hover { background: #fecaca; }

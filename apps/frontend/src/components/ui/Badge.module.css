@@ -1,0 +1,16 @@
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.high { background: #fee2e2; color: #dc2626; }
+.medium { background: #fef9c3; color: #ca8a04; }
+.low { background: #dcfce7; color: #16a34a; }
+
+.task { background: #dbeafe; color: #2563eb; }
+.story { background: #ede9fe; color: #7c3aed; }
+.bug { background: #fee2e2; color: #dc2626; }
