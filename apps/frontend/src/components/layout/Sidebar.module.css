@@ -1,0 +1,78 @@
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  gap: 4px;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-indigo);
+  padding: 4px 8px 12px;
+}
+
+.section {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  padding: 8px 8px 4px;
+}
+
+.navItem {
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.1s;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.navItem:hover {
+  background: var(--color-bg);
+}
+
+.navItem.active {
+  background: #eef2ff;
+  color: var(--color-indigo);
+  font-weight: 600;
+}
+
+.spacer { flex: 1; }
+
+.userSection {
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+  margin-top: 8px;
+}
+
+.userLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.userSelect {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  cursor: pointer;
+}
