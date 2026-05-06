@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity, PrimaryGeneratedColumn, Column, ManyToOne, DeleteDateColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Team } from '../teams/team.entity';
 
@@ -18,4 +20,8 @@ export class Project {
 
   @ManyToOne(() => Team, { nullable: true, eager: false })
   team: Team | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  @DeleteDateColumn({ nullable: true })
+  deletedAt: Date | null;
 }

@@ -1,0 +1,39 @@
+/* [project]/apps/frontend/src/components/layout/AppShell.module.css [app-client] (css) */
+.AppShell-module__bKDqda__shell {
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+.AppShell-module__bKDqda__main {
+  background: none;
+  flex: 1;
+  padding: 24px;
+  position: relative;
+  overflow: auto;
+}
+
+.AppShell-module__bKDqda__revealButton {
+  z-index: 20;
+  width: 56px;
+  height: 56px;
+  color: var(--color-text-primary);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background: #ffffffe6;
+  border: 1px solid #ffffffb3;
+  border-radius: 999px;
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  box-shadow: 0 8px 24px #0f172a1f;
+}
+
+.AppShell-module__bKDqda__revealLogo {
+  object-fit: contain;
+}
+
+/*# sourceMappingURL=apps_frontend_src_components_layout_AppShell_module_css_0w3-wzy._.single.css.map*/

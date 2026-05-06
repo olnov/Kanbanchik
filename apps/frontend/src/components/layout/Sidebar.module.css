@@ -1,8 +1,20 @@
-.sidebar {
+.shell {
   width: 220px;
   min-width: 220px;
-  background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
+  transition: width 0.22s ease, min-width 0.22s ease;
+  overflow: hidden;
+}
+
+.shellCollapsed {
+  width: 0;
+  min-width: 0;
+}
+
+.sidebar {
+  width: 220px;
+  background: rgba(255, 255, 255, 0.84);
+  border-right: 1px solid rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
   padding: 16px 12px;
@@ -11,11 +23,31 @@
   overflow-y: auto;
 }
 
-.logo {
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--color-indigo);
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 4px 8px 12px;
+}
+
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  object-fit: contain;
+}
+
+.toggleButton {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 .section {
@@ -40,19 +72,28 @@
 }
 
 .navItem:hover {
-  background: var(--color-bg);
+  background: rgba(255, 255, 255, 0.48);
 }
 
 .navItem.active {
-  background: #eef2ff;
+  background: rgba(238, 242, 255, 0.9);
   color: var(--color-indigo);
   font-weight: 600;
 }
 
-.spacer { flex: 1; }
+.emptyHint {
+  padding: 4px 8px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+.spacer {
+  flex: 1;
+}
 
 .userSection {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.7);
   padding-top: 12px;
   margin-top: 8px;
 }
@@ -69,10 +110,17 @@
 .userSelect {
   width: 100%;
   padding: 6px 8px;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: var(--radius-md);
   font-size: 13px;
   color: var(--color-text-primary);
-  background: var(--color-surface);
+  background: rgba(255, 255, 255, 0.86);
   cursor: pointer;
+}
+
+.errorHint {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #b91c1c;
 }

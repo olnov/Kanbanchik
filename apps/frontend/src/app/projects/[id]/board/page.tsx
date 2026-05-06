@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState, useCallback } from 'react';
+import { use, useCallback, useEffect, useState } from 'react';
 import { Board } from '@/components/board/Board';
 import { CardModal } from '@/components/board/CardModal';
 import { AiImportModal } from '@/components/board/AiImportModal';
@@ -16,22 +16,31 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [addToStage, setAddToStage] = useState<string | null>(null);
   const [showAiImport, setShowAiImport] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadBoard = useCallback(async () => {
-    const [board, allUsers] = await Promise.all([
-      api.getBoard(id),
-      api.getUsers(),
-    ]);
-    setData(board);
-    setUsers(allUsers);
+    try {
+      const [board, allUsers] = await Promise.all([
+        api.getBoard(id),
+        api.getUsers(),
+      ]);
+      setData(board);
+      setUsers(allUsers);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load board');
+    }
   }, [id]);
 
-  useEffect(() => { loadBoard(); }, [loadBoard]);
+  useEffect(() => {
+    loadBoard();
+  }, [loadBoard]);
 
-  if (!data) return <div>Loading…</div>;
+  if (error) return <div className={styles.status}>{error}</div>;
+  if (!data) return <div className={styles.status}>Loading...</div>;
 
   return (
-    <div>
+    <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.heading}>{data.project.name}</h1>
         <div className={styles.actions}>
@@ -58,8 +67,8 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
             setSelectedCard(null);
             loadBoard();
           }}
-          onDelete={async (id) => {
-            await api.deleteCard(id);
+          onDelete={async (cardId) => {
+            await api.deleteCard(cardId);
             setSelectedCard(null);
             loadBoard();
           }}
@@ -74,11 +83,13 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
           users={users}
           onClose={() => setAddToStage(null)}
           onSave={async (newCard) => {
-            await api.createCard(newCard as any);
+            await api.createCard(newCard as Card);
             setAddToStage(null);
             loadBoard();
           }}
-          onDelete={async () => { setAddToStage(null); }}
+          onDelete={async () => {
+            setAddToStage(null);
+          }}
         />
       )}
 

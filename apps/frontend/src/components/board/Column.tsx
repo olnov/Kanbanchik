@@ -5,10 +5,10 @@ import { AddCardButton } from './AddCardButton';
 import type { Stage, Card as CardType, User } from '@/lib/types';
 
 const COLUMN_COLORS: Record<number, { bg: string; color: string }> = {
-  0: { bg: 'var(--color-indigo-bg)', color: 'var(--color-indigo)' },
-  1: { bg: 'var(--color-amber-bg)', color: 'var(--color-amber)' },
-  2: { bg: 'var(--color-purple-bg)', color: 'var(--color-purple)' },
-  3: { bg: 'var(--color-green-bg)', color: 'var(--color-green)' },
+  0: { bg: 'rgb(248 249 255 / 82%)', color: 'var(--color-indigo)' },
+  1: { bg: 'rgb(255 247 237 / 82%)', color: 'var(--color-amber)' },
+  2: { bg: 'rgb(253 244 255 / 82%)', color: 'var(--color-purple)' },
+  3: { bg: 'rgb(240 253 244 / 82%)', color: 'var(--color-green)' },
 };
 
 interface ColumnProps {

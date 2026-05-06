@@ -1,0 +1,28 @@
+/* [project]/apps/frontend/src/components/board/Board.module.css [app-client] (css) */
+.Board-module__F_mqwa__board {
+  align-items: flex-start;
+  gap: 12px;
+  min-height: calc(100vh - 100px);
+  padding-bottom: 16px;
+  display: flex;
+  overflow-x: auto;
+}
+
+.Board-module__F_mqwa__addCard {
+  border-radius: var(--radius-md);
+  width: 100%;
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-border);
+  cursor: pointer;
+  background: #0000000a;
+  padding: 6px;
+  font-size: 12px;
+  transition: background .1s;
+}
+
+.Board-module__F_mqwa__addCard:hover {
+  color: var(--color-text-secondary);
+  background: #00000014;
+}
+
+/*# sourceMappingURL=apps_frontend_src_components_board_Board_module_css_0w3-wzy._.single.css.map*/

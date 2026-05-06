@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity, PrimaryGeneratedColumn, Column, ManyToOne, DeleteDateColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Project } from '../projects/project.entity';
 
@@ -22,4 +24,8 @@ export class Stage {
 
   @ManyToOne(() => Project, { onDelete: 'CASCADE' })
   project: Project;
+
+  @ApiProperty({ required: false, nullable: true })
+  @DeleteDateColumn({ nullable: true })
+  deletedAt: Date | null;
 }

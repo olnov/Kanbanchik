@@ -3,15 +3,15 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: kanbanchik
-      POSTGRES_USER: kanbanchik
-      POSTGRES_PASSWORD: kanbanchik
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kanbanchik -d kanbanchik"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -23,10 +23,11 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://kanbanchik:kanbanchik@postgres:5432/kanbanchik
-      PORT: 3001
+      DATABASE_URL: ${POSTGRES_CONNECTION_URL}
+      PORT: ${BACKEND_PORT}
+      AUTO_SEED_DEMO: ${AUTO_SEED_DEMO}
     ports:
-      - "3001:3001"
+      - "${BACKEND_PORT}:3001"
     depends_on:
       postgres:
         condition: service_healthy
@@ -36,10 +37,10 @@ services:
       context: .
       dockerfile: apps/frontend/Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: http://localhost:3001/api/v1
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT}:3000"
     depends_on:
       - backend
 

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/apps/frontend/src/components/board/CardModal.module.css"],"sourcesContent":[".form { display: flex; flex-direction: column; gap: 16px; }\n\n.field { display: flex; flex-direction: column; gap: 6px; }\n\n.label {\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.4px;\n  color: var(--color-text-muted);\n}\n\n.input, .textarea, .select {\n  padding: 8px 10px;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  font-size: 13px;\n  color: var(--color-text-primary);\n  background: var(--color-surface);\n  width: 100%;\n}\n.input:focus, .textarea:focus, .select:focus {\n  outline: 2px solid var(--color-indigo);\n  outline-offset: -1px;\n}\n\n.textarea { resize: vertical; min-height: 80px; font-family: inherit; }\n\n.row { display: flex; gap: 12px; }\n.row .field { flex: 1; }\n\n.footer {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding-top: 8px;\n  border-top: 1px solid var(--color-border);\n  margin-top: 4px;\n}\n"],"names":[],"mappings":"AAAA;;;;;;AAEA;;;;;;AAEA;;;;;;;;AAQA;;;;;;;;;;AASA;;;;;AAKA;;;;;;AAEA;;;;;AACA;;;;AAEA"}}]
+}

@@ -3,6 +3,7 @@ import { ApiTags, ApiSecurity } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Public } from '../../common/decorators/public.decorator';
 
 @ApiTags('users')
 @ApiSecurity('x-user-id')
@@ -11,6 +12,7 @@ export class UsersController {
   constructor(private readonly service: UsersService) {}
 
   @Get()
+  @Public()
   findAll() {
     return this.service.findAll();
   }

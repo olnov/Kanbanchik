@@ -1,0 +1,51 @@
+/* [project]/apps/frontend/src/components/board/Card.module.css [app-client] (css) */
+.Card-module__luDDoW__card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  margin-bottom: 6px;
+  padding: 10px 12px;
+  transition: box-shadow .15s, transform .1s;
+}
+
+.Card-module__luDDoW__card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px #0000001f;
+}
+
+.Card-module__luDDoW__summary {
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.Card-module__luDDoW__footer {
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  display: flex;
+}
+
+.Card-module__luDDoW__badges {
+  flex-wrap: wrap;
+  gap: 4px;
+  display: flex;
+}
+
+.Card-module__luDDoW__assignee {
+  background: var(--color-indigo);
+  color: #fff;
+  border-radius: 50%;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 22px;
+  height: 22px;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+}
+
+/*# sourceMappingURL=apps_frontend_src_components_board_Card_module_css_0w3-wzy._.single.css.map*/

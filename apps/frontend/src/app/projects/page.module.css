@@ -1,8 +1,69 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
 .heading {
   font-size: 22px;
   font-weight: 700;
   color: var(--color-text-primary);
-  margin-bottom: 24px;
+  margin-bottom: 6px;
+}
+
+.subheading {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.createForm {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.input {
+  min-width: 260px;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+}
+
+.error {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.emptyState {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  max-width: 560px;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.emptyText {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
 }
 
 .grid {
@@ -16,12 +77,20 @@
   border-radius: var(--radius-lg);
   padding: 20px;
   box-shadow: var(--shadow-card);
-  cursor: pointer;
   transition: box-shadow 0.15s;
-  text-decoration: none;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
-.card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); }
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.cardLink {
+  display: block;
+  text-decoration: none;
+}
 
 .cardName {
   font-size: 15px;
@@ -33,4 +102,9 @@
 .cardMeta {
   font-size: 12px;
   color: var(--color-text-muted);
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
 }

@@ -1,0 +1,19 @@
+{
+  "app": {
+    "[project]/apps/frontend/src/app/_not-found/page": [
+      "static/media/caa3a2e1cccd8315-s.p.16t1db8_9y2o~.woff2"
+    ],
+    "[project]/apps/frontend/src/app/projects/[id]/board/page": [
+      "static/media/caa3a2e1cccd8315-s.p.16t1db8_9y2o~.woff2"
+    ],
+    "[project]/apps/frontend/src/app/projects/page": [
+      "static/media/caa3a2e1cccd8315-s.p.16t1db8_9y2o~.woff2"
+    ],
+    "[project]/apps/frontend/src/app/teams/page": [
+      "static/media/caa3a2e1cccd8315-s.p.16t1db8_9y2o~.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

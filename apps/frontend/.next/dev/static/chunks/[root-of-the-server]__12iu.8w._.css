@@ -1,0 +1,373 @@
+/* [next]/internal/font/google/geist_30db5a86.module.css [app-client] (css) */
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../media/8a480f0b521d4e75-s.06d3mdzz5bre_.woff2") format("woff2");
+  unicode-range: U+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../media/7178b3e590c64307-s.11.cyxs5p-0z~.woff2") format("woff2");
+  unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../media/caa3a2e1cccd8315-s.p.16t1db8_9y2o~.woff2") format("woff2");
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../media/8a480f0b521d4e75-s.06d3mdzz5bre_.woff2") format("woff2");
+  unicode-range: U+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../media/7178b3e590c64307-s.11.cyxs5p-0z~.woff2") format("woff2");
+  unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../media/caa3a2e1cccd8315-s.p.16t1db8_9y2o~.woff2") format("woff2");
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../media/8a480f0b521d4e75-s.06d3mdzz5bre_.woff2") format("woff2");
+  unicode-range: U+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../media/7178b3e590c64307-s.11.cyxs5p-0z~.woff2") format("woff2");
+  unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../media/caa3a2e1cccd8315-s.p.16t1db8_9y2o~.woff2") format("woff2");
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../media/8a480f0b521d4e75-s.06d3mdzz5bre_.woff2") format("woff2");
+  unicode-range: U+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../media/7178b3e590c64307-s.11.cyxs5p-0z~.woff2") format("woff2");
+  unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: Geist;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../media/caa3a2e1cccd8315-s.p.16t1db8_9y2o~.woff2") format("woff2");
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Geist Fallback;
+  src: local(Arial);
+  ascent-override: 95.94%;
+  descent-override: 28.16%;
+  line-gap-override: 0.0%;
+  size-adjust: 104.76%;
+}
+
+.geist_30db5a86-module__NCFK9a__className {
+  font-family: Geist, Geist Fallback;
+  font-style: normal;
+}
+
+/* [project]/apps/frontend/src/app/globals.css [app-client] (css) */
+:root {
+  --color-indigo: #6366f1;
+  --color-indigo-bg: #f8f9ff;
+  --color-amber: #f59e0b;
+  --color-amber-bg: #fff7ed;
+  --color-green: #22c55e;
+  --color-green-bg: #f0fdf4;
+  --color-purple: #a855f7;
+  --color-purple-bg: #fdf4ff;
+  --color-text-primary: #374151;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+  --color-border: #e5e7eb;
+  --color-bg: #f0f4ff;
+  --color-surface: #fff;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --shadow-card: 0 1px 3px #00000014;
+  --shadow-modal: 0 8px 32px #00000029;
+}
+
+*, :before, :after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+  height: 100%;
+  font-family: Geist, sans-serif;
+  font-size: 14px;
+}
+
+body {
+  isolation: isolate;
+  height: 100vh;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+body:before {
+  content: "";
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("/background.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: fixed;
+  inset: 0;
+}
+
+body:after {
+  content: "";
+  z-index: 0;
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+}
+
+body > * {
+  z-index: 1;
+  position: relative;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+  background: none;
+  border: none;
+}
+
+/* [project]/apps/frontend/src/components/layout/Sidebar.module.css [app-client] (css) */
+.Sidebar-module__ZM0Xeq__shell {
+  width: 220px;
+  min-width: 220px;
+  transition: width .22s, min-width .22s;
+  overflow: hidden;
+}
+
+.Sidebar-module__ZM0Xeq__shellCollapsed {
+  width: 0;
+  min-width: 0;
+}
+
+.Sidebar-module__ZM0Xeq__sidebar {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: #ffffffd6;
+  border-right: 1px solid #ffffffad;
+  flex-direction: column;
+  gap: 4px;
+  width: 220px;
+  height: 100vh;
+  padding: 16px 12px;
+  display: flex;
+  overflow-y: auto;
+}
+
+.Sidebar-module__ZM0Xeq__topRow {
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 12px;
+  display: flex;
+}
+
+.Sidebar-module__ZM0Xeq__logoLink {
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+
+.Sidebar-module__ZM0Xeq__logo {
+  object-fit: contain;
+}
+
+.Sidebar-module__ZM0Xeq__toggleButton {
+  color: var(--color-text-secondary);
+  background: #ffffffbf;
+  border: 1px solid #ffffffb3;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.Sidebar-module__ZM0Xeq__section {
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--color-text-muted);
+  padding: 8px 8px 4px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.Sidebar-module__ZM0Xeq__navItem {
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  transition: background .1s;
+  display: block;
+}
+
+.Sidebar-module__ZM0Xeq__navItem:hover {
+  background: #ffffff7a;
+}
+
+.Sidebar-module__ZM0Xeq__navItem.Sidebar-module__ZM0Xeq__active {
+  color: var(--color-indigo);
+  background: #eef2ffe6;
+  font-weight: 600;
+}
+
+.Sidebar-module__ZM0Xeq__emptyHint {
+  color: var(--color-text-muted);
+  padding: 4px 8px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.Sidebar-module__ZM0Xeq__spacer {
+  flex: 1;
+}
+
+.Sidebar-module__ZM0Xeq__userSection {
+  border-top: 1px solid #ffffffb3;
+  margin-top: 8px;
+  padding-top: 12px;
+}
+
+.Sidebar-module__ZM0Xeq__userLabel {
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.Sidebar-module__ZM0Xeq__userSelect {
+  border-radius: var(--radius-md);
+  width: 100%;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  background: #ffffffdb;
+  border: 1px solid #ffffffb8;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.Sidebar-module__ZM0Xeq__errorHint {
+  color: #b91c1c;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* [project]/apps/frontend/src/components/layout/AppShell.module.css [app-client] (css) */
+.AppShell-module__bKDqda__shell {
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+.AppShell-module__bKDqda__main {
+  background: none;
+  flex: 1;
+  padding: 24px;
+  position: relative;
+  overflow: auto;
+}
+
+.AppShell-module__bKDqda__revealButton {
+  z-index: 20;
+  width: 56px;
+  height: 56px;
+  color: var(--color-text-primary);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background: #ffffffe6;
+  border: 1px solid #ffffffb3;
+  border-radius: 999px;
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  box-shadow: 0 8px 24px #0f172a1f;
+}
+
+.AppShell-module__bKDqda__revealLogo {
+  object-fit: contain;
+}
+
+/*# sourceMappingURL=%5Broot-of-the-server%5D__12iu.8w._.css.map*/

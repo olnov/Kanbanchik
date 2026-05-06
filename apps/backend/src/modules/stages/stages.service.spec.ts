@@ -3,7 +3,14 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { StagesService } from './stages.service';
 import { Stage } from './stage.entity';
 
-const mockStage: Stage = { id: 's-1', name: 'To Do', order: 0, projectId: 'proj-1', project: null as any };
+const mockStage: Stage = {
+  id: 's-1',
+  name: 'To Do',
+  order: 0,
+  projectId: 'proj-1',
+  project: null as any,
+  deletedAt: null,
+};
 const mockRepo = {
   find: jest.fn().mockResolvedValue([mockStage]),
   findOneByOrFail: jest.fn().mockResolvedValue(mockStage),

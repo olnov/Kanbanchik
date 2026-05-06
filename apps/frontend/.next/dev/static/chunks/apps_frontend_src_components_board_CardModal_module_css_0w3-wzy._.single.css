@@ -1,0 +1,61 @@
+/* [project]/apps/frontend/src/components/board/CardModal.module.css [app-client] (css) */
+.CardModal-module__BSwb9a__form {
+  flex-direction: column;
+  gap: 16px;
+  display: flex;
+}
+
+.CardModal-module__BSwb9a__field {
+  flex-direction: column;
+  gap: 6px;
+  display: flex;
+}
+
+.CardModal-module__BSwb9a__label {
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.CardModal-module__BSwb9a__input, .CardModal-module__BSwb9a__textarea, .CardModal-module__BSwb9a__select {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.CardModal-module__BSwb9a__input:focus, .CardModal-module__BSwb9a__textarea:focus, .CardModal-module__BSwb9a__select:focus {
+  outline: 2px solid var(--color-indigo);
+  outline-offset: -1px;
+}
+
+.CardModal-module__BSwb9a__textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.CardModal-module__BSwb9a__row {
+  gap: 12px;
+  display: flex;
+}
+
+.CardModal-module__BSwb9a__row .CardModal-module__BSwb9a__field {
+  flex: 1;
+}
+
+.CardModal-module__BSwb9a__footer {
+  border-top: 1px solid var(--color-border);
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  padding-top: 8px;
+  display: flex;
+}
+
+/*# sourceMappingURL=apps_frontend_src_components_board_CardModal_module_css_0w3-wzy._.single.css.map*/

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/apps/frontend/src/components/layout/AppShell.module.css"],"sourcesContent":[".shell {\n  display: flex;\n  height: 100vh;\n  overflow: hidden;\n}\n\n.main {\n  flex: 1;\n  overflow: auto;\n  padding: 24px;\n  background: transparent;\n  position: relative;\n}\n\n.revealButton {\n  position: fixed;\n  top: 16px;\n  left: 16px;\n  z-index: 20;\n  width: 56px;\n  height: 56px;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 999px;\n  color: var(--color-text-primary);\n  background: rgba(255, 255, 255, 0.9);\n  border: 1px solid rgba(255, 255, 255, 0.7);\n  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);\n  backdrop-filter: blur(10px);\n}\n\n.revealLogo {\n  object-fit: contain;\n}\n"],"names":[],"mappings":"AAAA;;;;;;AAMA;;;;;;;;AAQA;;;;;;;;;;;;;;;;;;;AAkBA"}}]
+}

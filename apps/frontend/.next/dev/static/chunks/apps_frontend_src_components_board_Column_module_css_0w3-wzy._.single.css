@@ -1,0 +1,42 @@
+/* [project]/apps/frontend/src/components/board/Column.module.css [app-client] (css) */
+.Column-module__bUP_Nq__column {
+  border-radius: var(--radius-lg);
+  border: 1px solid #2c2a2a1f;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 260px;
+  max-width: 260px;
+  max-height: calc(100vh - 120px);
+  padding: 12px;
+  display: flex;
+}
+
+.Column-module__bUP_Nq__header {
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  display: flex;
+}
+
+.Column-module__bUP_Nq__title {
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.Column-module__bUP_Nq__count {
+  color: var(--color-text-muted);
+  background: #0000000f;
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 11px;
+}
+
+.Column-module__bUP_Nq__cards {
+  flex: 1;
+  min-height: 40px;
+  overflow-y: auto;
+}
+
+/*# sourceMappingURL=apps_frontend_src_components_board_Column_module_css_0w3-wzy._.single.css.map*/

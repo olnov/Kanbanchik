@@ -22,6 +22,7 @@ export function Card({ card, index, assignee, onClick }: CardProps) {
           style={{
             ...provided.draggableProps.style,
             opacity: snapshot.isDragging ? 0.85 : 1,
+            zIndex: snapshot.isDragging ? 1000 : 'auto',
           }}
           onClick={() => onClick(card)}
         >

@@ -7,7 +7,7 @@ const makeCard = (id: string, stageId: string, order: number): Card =>
   ({ id, stageId, order, summary: id, type: 'task', priority: 'medium',
      projectId: 'proj-1', description: null, dueDate: null, assigneeId: null,
      project: null as any, stage: null as any, assignee: null,
-     createdAt: new Date(), updatedAt: new Date() });
+     createdAt: new Date(), updatedAt: new Date(), deletedAt: null });
 
 describe('CardsService', () => {
   let service: CardsService;

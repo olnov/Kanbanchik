@@ -6,3 +6,8 @@ dist/
 .superpowers/
 coverage/
 *.pnpm-debug.log*
+docs/
+.claude/
+.playwright-mcp/
+energy_widget_project_specification.md
+kanban_full_spec.md

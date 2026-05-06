@@ -1,6 +1,6 @@
 import {
   Entity, PrimaryGeneratedColumn, Column,
-  ManyToOne, CreateDateColumn, UpdateDateColumn,
+  ManyToOne, CreateDateColumn, UpdateDateColumn, DeleteDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Project } from '../projects/project.entity';
@@ -65,4 +65,8 @@ export class Card {
   @ApiProperty()
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ApiProperty({ required: false, nullable: true })
+  @DeleteDateColumn({ nullable: true })
+  deletedAt: Date | null;
 }

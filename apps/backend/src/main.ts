@@ -28,6 +28,8 @@ async function bootstrap() {
 
   app.enableCors({
     origin: ['http://localhost:3000', 'app://-'],
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'x-user-id'],
   });
 
   const config = new DocumentBuilder()

@@ -10,6 +10,7 @@ import { StagesModule } from './modules/stages/stages.module';
 import { CardsModule } from './modules/cards/cards.module';
 import { AiModule } from './modules/ai/ai.module';
 import { UserInterceptor } from './common/interceptors/user.interceptor';
+import { DevBootstrapService } from './database/dev-bootstrap.service';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { UserInterceptor } from './common/interceptors/user.interceptor';
     AiModule,
   ],
   providers: [
+    DevBootstrapService,
     { provide: APP_INTERCEPTOR, useClass: UserInterceptor },
   ],
 })

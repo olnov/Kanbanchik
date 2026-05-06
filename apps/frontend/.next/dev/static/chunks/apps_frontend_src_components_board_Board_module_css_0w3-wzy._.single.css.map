@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/apps/frontend/src/components/board/Board.module.css"],"sourcesContent":[".board {\n  display: flex;\n  gap: 12px;\n  overflow-x: auto;\n  padding-bottom: 16px;\n  min-height: calc(100vh - 100px);\n  align-items: flex-start;\n}\n\n.addCard {\n  width: 100%;\n  padding: 6px;\n  border-radius: var(--radius-md);\n  font-size: 12px;\n  color: var(--color-text-muted);\n  background: rgba(0,0,0,0.04);\n  border: 1px dashed var(--color-border);\n  cursor: pointer;\n  transition: background 0.1s;\n}\n.addCard:hover {\n  background: rgba(0,0,0,0.08);\n  color: var(--color-text-secondary);\n}\n"],"names":[],"mappings":"AAAA;;;;;;;;;AASA;;;;;;;;;;;;AAWA"}}]
+}

@@ -1,4 +1,6 @@
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import {
+  Controller, Get, Post, Delete, Param, Body, HttpCode,
+} from '@nestjs/common';
 import { ApiTags, ApiSecurity } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -17,6 +19,10 @@ export class ProjectsController {
 
   @Post()
   create(@Body() dto: CreateProjectDto) { return this.service.create(dto); }
+
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@Param('id') id: string) { return this.service.remove(id); }
 
   @Get(':id/board')
   getBoard(@Param('id') id: string) { return this.service.getBoard(id); }

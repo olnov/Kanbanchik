@@ -1,0 +1,113 @@
+/* [project]/apps/frontend/src/app/projects/page.module.css [app-client] (css) */
+.page-module__Na5Dfq__header {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 24px;
+  display: flex;
+}
+
+.page-module__Na5Dfq__heading {
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.page-module__Na5Dfq__subheading {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.page-module__Na5Dfq__createForm {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  display: flex;
+}
+
+.page-module__Na5Dfq__input {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  min-width: 260px;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  padding: 9px 12px;
+  font-size: 13px;
+}
+
+.page-module__Na5Dfq__error {
+  border-radius: var(--radius-md);
+  color: #b91c1c;
+  background: #fef2f2;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.page-module__Na5Dfq__emptyState {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  max-width: 560px;
+  padding: 24px;
+}
+
+.page-module__Na5Dfq__emptyTitle {
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.page-module__Na5Dfq__emptyText {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.page-module__Na5Dfq__grid {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  display: grid;
+}
+
+.page-module__Na5Dfq__card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  transition: box-shadow .15s;
+  display: flex;
+}
+
+.page-module__Na5Dfq__card:hover {
+  box-shadow: 0 4px 16px #0000001a;
+}
+
+.page-module__Na5Dfq__cardLink {
+  text-decoration: none;
+  display: block;
+}
+
+.page-module__Na5Dfq__cardName {
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.page-module__Na5Dfq__cardMeta {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.page-module__Na5Dfq__cardActions {
+  justify-content: flex-end;
+  display: flex;
+}
+
+/*# sourceMappingURL=apps_frontend_src_app_projects_page_module_css_0w3-wzy._.single.css.map*/

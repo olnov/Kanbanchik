@@ -8,6 +8,7 @@
     "start": "node dist/main.js",
     "test": "jest",
     "test:watch": "jest --watch",
+    "ensure-demo": "ts-node -r tsconfig-paths/register src/database/ensure-demo.ts",
     "seed": "ts-node -r tsconfig-paths/register src/database/seed.ts",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
