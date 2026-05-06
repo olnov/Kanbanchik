@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install *)",
+      "PowerShell(Set-Location C:\\\\Work\\\\Kanbanchik; Test-Path pnpm-lock.yaml; \\(Get-Item pnpm-lock.yaml\\).Length / 1KB)",
+      "Bash(Test-Path \"C:\\\\Work\\\\Kanbanchik\\\\node_modules\" -PathType Container)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(pnpm --filter backend install)",
+      "PowerShell(New-Item -ItemType Directory -Path \"C:\\\\Work\\\\Kanbanchik\\\\apps\\\\backend\\\\src\" -Force)",
+      "PowerShell(New-Item -ItemType Directory -Path C:\\\\Work\\\\Kanbanchik\\\\apps\\\\backend\\\\src\\\\modules\\\\users\\\\dto -Force)",
+      "Bash(pnpm --filter backend test -- --testPathPattern=teams.service)",
+      "Bash(npx jest *)",
+      "PowerShell(New-Item -ItemType Directory -Path C:\\\\Work\\\\Kanbanchik\\\\apps\\\\backend\\\\src\\\\modules\\\\projects\\\\dto -Force)",
+      "PowerShell(New-Item -ItemType Directory -Path \"C:\\\\Work\\\\Kanbanchik\\\\apps\\\\backend\\\\src\\\\common\\\\interceptors\" -Force)",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Work\\\\Kanbanchik\\\\apps\\\\backend\\\\src\\\\modules\\\\ai\\\\providers\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Work\\\\Kanbanchik\\\\apps\\\\backend\\\\src\\\\modules\\\\ai\\\\dto\")",
+      "PowerShell(New-Item -ItemType Directory -Path \"C:\\\\Work\\\\Kanbanchik\\\\apps\\\\backend\\\\src\\\\database\" -Force)"
+    ]
+  }
+}
