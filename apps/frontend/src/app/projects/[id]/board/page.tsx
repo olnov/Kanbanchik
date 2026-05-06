@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { use, useEffect, useState, useCallback } from 'react';
 import { Board } from '@/components/board/Board';
 import { CardModal } from '@/components/board/CardModal';
 import { AiImportModal } from '@/components/board/AiImportModal';
@@ -9,7 +9,8 @@ import { api } from '@/lib/api';
 import type { BoardData, Card, User } from '@/lib/types';
 import styles from './page.module.css';
 
-export default function BoardPage({ params }: { params: { id: string } }) {
+export default function BoardPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [data, setData] = useState<BoardData | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
@@ -18,12 +19,12 @@ export default function BoardPage({ params }: { params: { id: string } }) {
 
   const loadBoard = useCallback(async () => {
     const [board, allUsers] = await Promise.all([
-      api.getBoard(params.id),
+      api.getBoard(id),
       api.getUsers(),
     ]);
     setData(board);
     setUsers(allUsers);
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => { loadBoard(); }, [loadBoard]);
 
@@ -69,7 +70,7 @@ export default function BoardPage({ params }: { params: { id: string } }) {
         <CardModal
           card={null}
           stageId={addToStage}
-          projectId={params.id}
+          projectId={id}
           users={users}
           onClose={() => setAddToStage(null)}
           onSave={async (newCard) => {
@@ -83,7 +84,7 @@ export default function BoardPage({ params }: { params: { id: string } }) {
 
       {showAiImport && (
         <AiImportModal
-          projectId={params.id}
+          projectId={id}
           stages={data.stages}
           onClose={() => setShowAiImport(false)}
           onConfirm={async () => {
