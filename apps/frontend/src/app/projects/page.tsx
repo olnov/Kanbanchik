@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { api } from '@/lib/api';
 import styles from './page.module.css';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProjectsPage() {
   const projects = await api.getProjects();
 
