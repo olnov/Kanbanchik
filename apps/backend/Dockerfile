@@ -20,7 +20,7 @@ RUN pnpm --filter backend build
 FROM base AS deployer
 WORKDIR /app
 COPY --from=builder /app ./
-RUN pnpm deploy --filter=backend --prod /deploy
+RUN pnpm deploy --filter=backend --prod --legacy /deploy
 
 # ---- Minimal production image ----
 FROM node:22-alpine AS runner
