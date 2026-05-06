@@ -1,0 +1,24 @@
+.board {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  min-height: calc(100vh - 100px);
+  align-items: flex-start;
+}
+
+.addCard {
+  width: 100%;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  background: rgba(0,0,0,0.04);
+  border: 1px dashed var(--color-border);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.addCard:hover {
+  background: rgba(0,0,0,0.08);
+  color: var(--color-text-secondary);
+}
