@@ -1,0 +1,30 @@
+{
+  "name": "electron",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "tsc && electron dist/main.js",
+    "build": "tsc",
+    "package": "tsc && electron-builder"
+  },
+  "dependencies": {
+    "electron-serve": "^1.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.0.0",
+    "typescript": "^5.4.0"
+  },
+  "build": {
+    "appId": "com.kanbanchik.app",
+    "productName": "Kanbanchik",
+    "directories": { "output": "release" },
+    "files": ["dist/**/*", "node_modules/**/*"],
+    "extraResources": [{ "from": "../frontend/out", "to": "app" }],
+    "mac": { "target": "dmg" },
+    "win": { "target": "nsis" },
+    "linux": { "target": "AppImage" }
+  }
+}
