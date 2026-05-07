@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { PROJECTS_UPDATED_EVENT } from '@/lib/project-events';
 import { getStoredUserId, setStoredUserId } from '@/lib/user-context';
+import { X } from 'lucide-react';
 import type { User, Project } from '@/lib/types';
 import styles from './Sidebar.module.css';
 
@@ -78,7 +79,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             />
           </Link>
           <button type="button" className={styles.toggleButton} onClick={onToggle}>
-            Hide
+            <X size={20} />
           </button>
         </div>
 

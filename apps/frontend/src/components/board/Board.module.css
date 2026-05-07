@@ -1,10 +1,106 @@
+.boardWrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.boardScroller {
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 12px;
+  scrollbar-color: rgb(177, 176, 176) transparent;
+  scrollbar-gutter: stable both-edges;
+}
+
 .board {
   display: flex;
   gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 16px;
-  min-height: calc(100vh - 100px);
+  height: 100%;
+  min-height: 0;
   align-items: flex-start;
+  width: max-content;
+  min-width: 100%;
+}
+
+.error {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(254, 242, 242, 0.92);
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.addListColumn {
+  min-width: 280px;
+  max-width: 280px;
+  flex: 0 0 280px;
+}
+
+.addListTrigger {
+  width: 100%;
+  min-height: 60px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed rgba(44, 42, 42, 0.16);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.addListTrigger:hover {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(44, 42, 42, 0.24);
+}
+
+.addListCard {
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(44, 42, 42, 0.12);
+  box-shadow: var(--shadow-card);
+}
+
+.addListInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.addListActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.addListConfirm,
+.addListCancel {
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+
+.addListConfirm {
+  background: var(--color-indigo);
+  color: #fff;
+}
+
+.addListCancel {
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .addCard {
@@ -12,8 +108,8 @@
   padding: 6px;
   border-radius: var(--radius-md);
   font-size: 12px;
-  color: var(--color-text-muted);
-  background: rgba(0,0,0,0.04);
+  color: var(--color-text-primary);
+  background: rgba(0,0,0,0.15);
   border: 1px dashed var(--color-border);
   cursor: pointer;
   transition: background 0.1s;

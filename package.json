@@ -1,13 +1,16 @@
 {
   "name": "kanbanchik",
   "private": true,
+  "license": "MIT",
   "scripts": {
+    "preinstall": "node scripts/enforce-package-manager.cjs",
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "dev:electron": "pnpm --filter electron dev",
     "test": "pnpm -r test",
     "build": "pnpm -r build"
   },
+  "packageManager": "pnpm@10.29.3",
   "pnpm": {
     "onlyBuiltDependencies": ["electron"]
   },

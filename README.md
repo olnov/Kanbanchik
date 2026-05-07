@@ -27,6 +27,10 @@ Kanbanchik is a small kanban workspace built as a pnpm monorepo. It includes a N
 - Tooling: pnpm workspaces, Jest, TypeScript
 - AI: `mock` provider by default, optional Groq provider
 
+## License
+
+MIT. See [LICENSE](./LICENSE).
+
 ## Quick start with Docker
 
 1. Install Docker and Docker Compose.

@@ -21,6 +21,7 @@ export function Card({ card, index, assignee, onClick }: CardProps) {
           className={styles.card}
           style={{
             ...provided.draggableProps.style,
+            cursor: snapshot.isDragging ? 'grabbing' : 'pointer',
             opacity: snapshot.isDragging ? 0.85 : 1,
             zIndex: snapshot.isDragging ? 1000 : 'auto',
           }}

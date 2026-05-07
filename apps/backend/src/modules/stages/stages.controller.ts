@@ -3,6 +3,7 @@ import { ApiTags, ApiSecurity } from '@nestjs/swagger';
 import { StagesService } from './stages.service';
 import { CreateStageDto } from './dto/create-stage.dto';
 import { UpdateStageDto } from './dto/update-stage.dto';
+import { ReorderStagesDto } from './dto/reorder-stages.dto';
 
 @ApiTags('stages')
 @ApiSecurity('x-user-id')
@@ -18,6 +19,11 @@ export class StagesController {
   @Post('projects/:projectId/stages')
   create(@Param('projectId') projectId: string, @Body() dto: CreateStageDto) {
     return this.service.create(projectId, dto);
+  }
+
+  @Patch('projects/:projectId/stages/reorder')
+  reorder(@Param('projectId') projectId: string, @Body() dto: ReorderStagesDto) {
+    return this.service.reorder(projectId, dto);
   }
 
   @Patch('stages/:id')

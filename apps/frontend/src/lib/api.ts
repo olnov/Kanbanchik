@@ -1,5 +1,7 @@
 import { getStoredUserId, setStoredUserId } from './user-context';
-import type { User, Team, Project, BoardData, Card, CardDraft } from './types';
+import type {
+  User, Team, Project, BoardData, Card, CardDraft, Stage,
+} from './types';
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1';
 let usersRequestPromise: Promise<User[]> | null = null;
@@ -154,6 +156,17 @@ export const api = {
     request<Project>('/projects', { method: 'POST', body: JSON.stringify(data) }),
   deleteProject: (id: string) =>
     request<void>(`/projects/${id}`, { method: 'DELETE' }),
+  createStage: (projectId: string, data: { name: string; order?: number }) =>
+    request<Stage>(`/projects/${projectId}/stages`, { method: 'POST', body: JSON.stringify(data) }),
+  reorderStages: (projectId: string, stageIds: string[]) =>
+    request<Stage[]>(`/projects/${projectId}/stages/reorder`, {
+      method: 'PATCH',
+      body: JSON.stringify({ stageIds }),
+    }),
+  updateStage: (id: string, data: { name?: string; order?: number }) =>
+    request<Stage>(`/stages/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteStage: (id: string) =>
+    request<void>(`/stages/${id}`, { method: 'DELETE' }),
 
   getBoard: (projectId: string) => request<BoardData>(`/projects/${projectId}/board`),
 
