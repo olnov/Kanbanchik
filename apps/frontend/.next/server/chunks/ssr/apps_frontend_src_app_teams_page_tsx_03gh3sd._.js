@@ -1,3 +1,0 @@
-module.exports=[35915,a=>{"use strict";var b=a.i(75945),c=a.i(11359),d=a.i(75152);a.s(["default",0,function(){let[a,e]=(0,c.useState)([]),[f,g]=(0,c.useState)(!0);return((0,c.useEffect)(()=>{let a=!0;return d.api.getTeams().then(b=>{a&&e(b)}).finally(()=>{a&&g(!1)}),()=>{a=!1}},[]),f)?(0,b.jsx)("div",{children:"Loading..."}):(0,b.jsxs)("div",{children:[(0,b.jsx)("h1",{style:{fontSize:22,fontWeight:700,marginBottom:24},children:"Teams"}),a.map(a=>(0,b.jsx)("div",{style:{background:"var(--color-surface)",borderRadius:"var(--radius-lg)",padding:"16px 20px",marginBottom:12,boxShadow:"var(--shadow-card)",fontWeight:600},children:a.name},a.id))]})}])}];
-
-//# sourceMappingURL=apps_frontend_src_app_teams_page_tsx_03gh3sd._.js.map

@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/apps/frontend/src/components/board/Column.module.css"],"sourcesContent":[".column {\n  min-width: 260px;\n  max-width: 260px;\n  border-radius: var(--radius-lg);\n  padding: 12px;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  max-height: calc(100vh - 120px);\n  border: 1px solid rgba(44, 42, 42, 0.12);\n}\n\n.header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 6px;\n}\n\n.title {\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n\n.count {\n  font-size: 11px;\n  color: var(--color-text-muted);\n  background: rgba(0,0,0,0.06);\n  padding: 1px 6px;\n  border-radius: 999px;\n}\n\n.cards {\n  flex: 1;\n  overflow-y: auto;\n  min-height: 40px;\n}\n"],"names":[],"mappings":"AAAA;;;;;;;;;;;;AAYA;;;;;;;AAOA;;;;;;;AAOA;;;;;;;;AAQA"}}]
-}

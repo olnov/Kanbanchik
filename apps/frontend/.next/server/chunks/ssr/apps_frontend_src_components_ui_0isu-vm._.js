@@ -1,3 +1,0 @@
-module.exports=[93775,a=>{a.v({button:"Button-module__FnIB6G__button",danger:"Button-module__FnIB6G__danger",ghost:"Button-module__FnIB6G__ghost",primary:"Button-module__FnIB6G__primary"})},82289,a=>{"use strict";var b=a.i(75945),c=a.i(93775);a.s(["Button",0,function({variant:a="primary",className:d,children:e,...f}){return(0,b.jsx)("button",{className:`${c.default.button} ${c.default[a]} ${d??""}`,...f,children:e})}])}];
-
-//# sourceMappingURL=apps_frontend_src_components_ui_0isu-vm._.js.map

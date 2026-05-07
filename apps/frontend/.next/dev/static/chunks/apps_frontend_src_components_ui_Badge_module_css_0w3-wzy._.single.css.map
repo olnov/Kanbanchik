@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/apps/frontend/src/components/ui/Badge.module.css"],"sourcesContent":[".badge {\n  display: inline-block;\n  padding: 2px 8px;\n  border-radius: 999px;\n  font-size: 11px;\n  font-weight: 600;\n  text-transform: capitalize;\n}\n\n.high { background: #fee2e2; color: #dc2626; }\n.medium { background: #fef9c3; color: #ca8a04; }\n.low { background: #dcfce7; color: #16a34a; }\n\n.task { background: #dbeafe; color: #2563eb; }\n.story { background: #ede9fe; color: #7c3aed; }\n.bug { background: #fee2e2; color: #dc2626; }\n"],"names":[],"mappings":"AAAA;;;;;;;;;AASA;;;;;AACA;;;;;AACA;;;;;AAEA;;;;;AACA;;;;;AACA"}}]
-}
