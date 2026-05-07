@@ -2,6 +2,10 @@ import { EntityManager } from 'typeorm';
 import { User } from '../modules/users/user.entity';
 import { Team } from '../modules/teams/team.entity';
 import { Project } from '../modules/projects/project.entity';
+import {
+  ProjectPermissionLevel,
+  ProjectTeamPermission,
+} from '../modules/projects/project-team-permission.entity';
 import { Stage } from '../modules/stages/stage.entity';
 import { Card } from '../modules/cards/card.entity';
 import { DEFAULT_PROJECT_STAGES } from './project-defaults';
@@ -17,6 +21,7 @@ export async function seedDemoWorkspace(
   const userRepo = manager.getRepository(User);
   const teamRepo = manager.getRepository(Team);
   const projectRepo = manager.getRepository(Project);
+  const permissionRepo = manager.getRepository(ProjectTeamPermission);
   const stageRepo = manager.getRepository(Stage);
   const cardRepo = manager.getRepository(Card);
 
@@ -24,15 +29,17 @@ export async function seedDemoWorkspace(
     await cardRepo.delete({});
     await stageRepo.delete({});
     await projectRepo.delete({});
+    await permissionRepo.delete({});
     await teamRepo.delete({});
     await userRepo.delete({});
   }
 
-  let users = await userRepo.find({ order: { name: 'ASC' } });
+  let users = await userRepo.find({ order: { name: 'ASC', lastName: 'ASC' } });
   if (users.length === 0) {
     users = await userRepo.save([
       userRepo.create({
         name: 'Alice',
+        lastName: 'Johnson',
         email: 'alice@example.com',
         role: 'developer',
         competencies: ['typescript', 'react'],
@@ -40,6 +47,7 @@ export async function seedDemoWorkspace(
       }),
       userRepo.create({
         name: 'Bob',
+        lastName: 'Smith',
         email: 'bob@example.com',
         role: 'designer',
         competencies: ['figma', 'css'],
@@ -47,6 +55,7 @@ export async function seedDemoWorkspace(
       }),
       userRepo.create({
         name: 'Carol',
+        lastName: 'Taylor',
         email: 'carol@example.com',
         role: 'product manager',
         competencies: ['planning', 'stakeholder management'],
@@ -59,7 +68,13 @@ export async function seedDemoWorkspace(
 
   let team = await teamRepo.findOne({ where: { name: 'Core Team' } });
   if (!team) {
-    team = await teamRepo.save(teamRepo.create({ name: 'Core Team' }));
+    team = await teamRepo.save(teamRepo.create({
+      name: 'Core Team',
+      members: users,
+    }));
+  } else if ((team.members?.length ?? 0) === 0) {
+    team.members = users;
+    team = await teamRepo.save(team);
   }
 
   let project = await projectRepo.findOne({ where: { name: 'Alpha Project' } });
@@ -67,6 +82,15 @@ export async function seedDemoWorkspace(
     project = await projectRepo.save(
       projectRepo.create({ name: 'Alpha Project', teamId: team.id }),
     );
+  }
+
+  const existingPermissions = await permissionRepo.find({ where: { projectId: project.id } });
+  if (existingPermissions.length === 0) {
+    await permissionRepo.save(permissionRepo.create({
+      projectId: project.id,
+      teamId: team.id,
+      permission: ProjectPermissionLevel.ADMIN,
+    }));
   }
 
   let stages = await stageRepo.find({ where: { projectId: project.id }, order: { order: 'ASC' } });

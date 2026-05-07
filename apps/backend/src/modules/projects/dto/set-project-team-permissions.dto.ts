@@ -1,21 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsString, IsOptional, IsUUID, IsArray, ValidateNested,
+  IsArray, IsOptional, ValidateNested,
 } from 'class-validator';
 import { ProjectTeamPermissionDto } from './project-team-permission.dto';
 
-export class CreateProjectDto {
-  @ApiProperty()
-  @IsString()
-  name: string;
-
-  @ApiProperty({ required: false })
-  @IsUUID()
-  @IsOptional()
-  teamId?: string;
-
-  @ApiProperty({ type: [ProjectTeamPermissionDto], required: false })
+export class SetProjectTeamPermissionsDto {
+  @ApiProperty({ type: [ProjectTeamPermissionDto], required: false, default: [] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProjectTeamPermissionDto)

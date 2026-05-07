@@ -12,6 +12,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
     },
+    autoHideMenuBar: true,
   });
 
   if (isDev) {

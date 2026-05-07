@@ -1,9 +1,10 @@
 import {
-  Controller, Get, Post, Delete, Param, Body, HttpCode,
+  Controller, Get, Post, Delete, Param, Body, HttpCode, Patch,
 } from '@nestjs/common';
 import { ApiTags, ApiSecurity } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { SetProjectTeamPermissionsDto } from './dto/set-project-team-permissions.dto';
 
 @ApiTags('projects')
 @ApiSecurity('x-user-id')
@@ -19,6 +20,11 @@ export class ProjectsController {
 
   @Post()
   create(@Body() dto: CreateProjectDto) { return this.service.create(dto); }
+
+  @Patch(':id/team-permissions')
+  setTeamPermissions(@Param('id') id: string, @Body() dto: SetProjectTeamPermissionsDto) {
+    return this.service.setTeamPermissions(id, dto);
+  }
 
   @Delete(':id')
   @HttpCode(204)

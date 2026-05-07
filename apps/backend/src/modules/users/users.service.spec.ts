@@ -6,10 +6,12 @@ import { User } from './user.entity';
 const mockUser: User = {
   id: 'uuid-1',
   name: 'Alice',
+  lastName: 'Johnson',
   email: 'alice@example.com',
   role: 'developer',
   competencies: ['typescript', 'react'],
   availability: 'available',
+  teams: [],
 };
 
 const mockRepo = {
@@ -17,6 +19,7 @@ const mockRepo = {
   findOneByOrFail: jest.fn().mockResolvedValue(mockUser),
   create: jest.fn().mockReturnValue(mockUser),
   save: jest.fn().mockResolvedValue(mockUser),
+  update: jest.fn().mockResolvedValue(undefined),
 };
 
 describe('UsersService', () => {
