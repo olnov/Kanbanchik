@@ -10,6 +10,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectTeamPermissionDto } from './dto/project-team-permission.dto';
 import { SetProjectTeamPermissionsDto } from './dto/set-project-team-permissions.dto';
 import { DEFAULT_PROJECT_STAGES } from '../../database/project-defaults';
+import { PermissionService } from '../permissions/permission.service';
 
 @Injectable()
 export class ProjectsService {
@@ -17,17 +18,20 @@ export class ProjectsService {
     @InjectRepository(Project) private readonly projectRepo: Repository<Project>,
     @InjectRepository(Stage) private readonly stageRepo: Repository<Stage>,
     @InjectRepository(Card) private readonly cardRepo: Repository<Card>,
+    private readonly permissionService: PermissionService,
   ) {}
 
-  findAll(): Promise<Project[]> {
-    return this.projectRepo.find();
+  async findAll(userId: string): Promise<Project[]> {
+    const accessibleIds = await this.permissionService.getAccessibleProjectIds(userId);
+    if (accessibleIds.length === 0) return [];
+    return this.projectRepo.findBy({ id: In(accessibleIds) });
   }
 
   findOne(id: string): Promise<Project> {
     return this.projectRepo.findOneByOrFail({ id });
   }
 
-  async create(dto: CreateProjectDto): Promise<Project> {
+  async create(dto: CreateProjectDto, createdById: string): Promise<Project> {
     return this.projectRepo.manager.transaction(async (manager) => {
       const projectRepo = manager.getRepository(Project);
       const teamRepo = manager.getRepository(Team);
@@ -37,6 +41,7 @@ export class ProjectsService {
       const project = await projectRepo.save(projectRepo.create({
         name: dto.name.trim(),
         teamId: dto.teamId ?? null,
+        createdById,
       }));
 
       const normalizedPermissions = await this.normalizeTeamPermissions(
@@ -102,13 +107,14 @@ export class ProjectsService {
     });
   }
 
-  async getBoard(projectId: string) {
-    const [project, stages, cards] = await Promise.all([
+  async getBoard(projectId: string, userId: string) {
+    const [project, stages, cards, myPermission] = await Promise.all([
       this.projectRepo.findOneByOrFail({ id: projectId }),
       this.stageRepo.find({ where: { projectId }, order: { order: 'ASC' } }),
       this.cardRepo.find({ where: { projectId }, order: { order: 'ASC' } }),
+      this.permissionService.getUserProjectPermission(userId, projectId),
     ]);
-    return { project, stages, cards };
+    return { project, stages, cards, myPermission };
   }
 
   private async normalizeTeamPermissions(
@@ -127,9 +133,7 @@ export class ProjectsService {
     }
 
     const teamIds = [...permissionsByTeam.keys()];
-    if (teamIds.length === 0) {
-      return [];
-    }
+    if (teamIds.length === 0) return [];
 
     const teams = await teamRepo.findBy({ id: In(teamIds) });
     if (teams.length !== teamIds.length) {
