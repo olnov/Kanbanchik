@@ -26,12 +26,12 @@ export async function seedDemoWorkspace(
   const cardRepo = manager.getRepository(Card);
 
   if (options.reset) {
-    await cardRepo.delete({});
-    await stageRepo.delete({});
-    await projectRepo.delete({});
-    await permissionRepo.delete({});
-    await teamRepo.delete({});
-    await userRepo.delete({});
+    await cardRepo.createQueryBuilder().delete().execute();
+    await stageRepo.createQueryBuilder().delete().execute();
+    await projectRepo.createQueryBuilder().delete().execute();
+    await permissionRepo.createQueryBuilder().delete().execute();
+    await teamRepo.createQueryBuilder().delete().execute();
+    await userRepo.createQueryBuilder().delete().execute();
   }
 
   let users = await userRepo.find({ order: { name: 'ASC', lastName: 'ASC' } });
@@ -64,33 +64,58 @@ export async function seedDemoWorkspace(
     ]);
   }
 
-  const [primaryUser, secondaryUser = primaryUser, tertiaryUser = primaryUser] = users;
+  // alice = project creator (admin by ownership)
+  // bob = collaborator via Core Team
+  // carol = viewer via Viewer Team
+  const [alice, bob, carol] = users;
 
-  let team = await teamRepo.findOne({ where: { name: 'Core Team' } });
-  if (!team) {
-    team = await teamRepo.save(teamRepo.create({
+  let coreTeam = await teamRepo.findOne({ where: { name: 'Core Team' } });
+  if (!coreTeam) {
+    coreTeam = await teamRepo.save(teamRepo.create({
       name: 'Core Team',
-      members: users,
+      members: [alice, bob],
     }));
-  } else if ((team.members?.length ?? 0) === 0) {
-    team.members = users;
-    team = await teamRepo.save(team);
+  } else if ((coreTeam.members?.length ?? 0) === 0) {
+    coreTeam.members = [alice, bob];
+    coreTeam = await teamRepo.save(coreTeam);
+  }
+
+  let viewerTeam = await teamRepo.findOne({ where: { name: 'Viewer Team' } });
+  if (!viewerTeam) {
+    viewerTeam = await teamRepo.save(teamRepo.create({
+      name: 'Viewer Team',
+      members: [carol],
+    }));
   }
 
   let project = await projectRepo.findOne({ where: { name: 'Alpha Project' } });
   if (!project) {
     project = await projectRepo.save(
-      projectRepo.create({ name: 'Alpha Project', teamId: team.id }),
+      projectRepo.create({
+        name: 'Alpha Project',
+        teamId: coreTeam.id,
+        createdById: alice.id,
+      }),
     );
+  } else if (!project.createdById) {
+    project.createdById = alice.id;
+    project = await projectRepo.save(project);
   }
 
   const existingPermissions = await permissionRepo.find({ where: { projectId: project.id } });
   if (existingPermissions.length === 0) {
-    await permissionRepo.save(permissionRepo.create({
-      projectId: project.id,
-      teamId: team.id,
-      permission: ProjectPermissionLevel.ADMIN,
-    }));
+    await permissionRepo.save([
+      permissionRepo.create({
+        projectId: project.id,
+        teamId: coreTeam.id,
+        permission: ProjectPermissionLevel.COLLABORATOR,
+      }),
+      permissionRepo.create({
+        projectId: project.id,
+        teamId: viewerTeam.id,
+        permission: ProjectPermissionLevel.VIEWER,
+      }),
+    ]);
   }
 
   let stages = await stageRepo.find({ where: { projectId: project.id }, order: { order: 'ASC' } });
@@ -112,7 +137,7 @@ export async function seedDemoWorkspace(
         order: 0,
         projectId: project.id,
         stageId: stageByName.Done.id,
-        assigneeId: primaryUser.id,
+        assigneeId: alice.id,
         description: 'Initialize pnpm workspace.',
       }),
       cardRepo.create({
@@ -122,7 +147,7 @@ export async function seedDemoWorkspace(
         order: 0,
         projectId: project.id,
         stageId: stageByName['In Progress'].id,
-        assigneeId: secondaryUser.id,
+        assigneeId: bob.id,
         description: 'Define all entities and relationships.',
       }),
       cardRepo.create({
@@ -132,7 +157,7 @@ export async function seedDemoWorkspace(
         order: 100,
         projectId: project.id,
         stageId: stageByName['In Progress'].id,
-        assigneeId: primaryUser.id,
+        assigneeId: alice.id,
         description: 'Implement the Kanban board with columns and cards.',
       }),
       cardRepo.create({
@@ -142,7 +167,7 @@ export async function seedDemoWorkspace(
         order: 0,
         projectId: project.id,
         stageId: stageByName['To Do'].id,
-        assigneeId: primaryUser.id,
+        assigneeId: alice.id,
         description: 'Integrate @hello-pangea/dnd into the board.',
       }),
       cardRepo.create({
@@ -152,11 +177,11 @@ export async function seedDemoWorkspace(
         order: 0,
         projectId: project.id,
         stageId: stageByName.Review.id,
-        assigneeId: tertiaryUser.id,
+        assigneeId: carol.id,
         description: 'Ensure all endpoints have Swagger decorators.',
       }),
     ]);
   }
 
-  return { users, team, project, stages };
+  return { users, coreTeam, viewerTeam, project, stages };
 }
