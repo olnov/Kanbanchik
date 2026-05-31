@@ -58,6 +58,7 @@ describe('TeamsService', () => {
       providers: [
         TeamsService,
         { provide: getRepositoryToken(Team), useValue: mockRepo },
+        { provide: getRepositoryToken(User), useValue: { findOneBy: jest.fn() } },
       ],
     }).compile();
     service = module.get(TeamsService);
