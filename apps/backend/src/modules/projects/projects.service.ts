@@ -1,14 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException, ConflictException, Injectable, NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Project } from './project.entity';
-import { ProjectPermissionLevel, ProjectTeamPermission } from './project-team-permission.entity';
+import { ProjectMember, ProjectPermissionLevel } from './project-member.entity';
 import { Stage } from '../stages/stage.entity';
 import { Card } from '../cards/card.entity';
-import { Team } from '../teams/team.entity';
+import { User } from '../users/user.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { ProjectTeamPermissionDto } from './dto/project-team-permission.dto';
-import { SetProjectTeamPermissionsDto } from './dto/set-project-team-permissions.dto';
+import { AddProjectMemberDto } from './dto/add-project-member.dto';
+import { UpdateProjectMemberRoleDto } from './dto/update-project-member-role.dto';
 import { DEFAULT_PROJECT_STAGES } from '../../database/project-defaults';
 import { PermissionService } from '../permissions/permission.service';
 
@@ -18,6 +20,8 @@ export class ProjectsService {
     @InjectRepository(Project) private readonly projectRepo: Repository<Project>,
     @InjectRepository(Stage) private readonly stageRepo: Repository<Stage>,
     @InjectRepository(Card) private readonly cardRepo: Repository<Card>,
+    @InjectRepository(ProjectMember) private readonly memberRepo: Repository<ProjectMember>,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
     private readonly permissionService: PermissionService,
   ) {}
 
@@ -34,28 +38,11 @@ export class ProjectsService {
   async create(dto: CreateProjectDto, createdById: string): Promise<Project> {
     return this.projectRepo.manager.transaction(async (manager) => {
       const projectRepo = manager.getRepository(Project);
-      const teamRepo = manager.getRepository(Team);
-      const permissionRepo = manager.getRepository(ProjectTeamPermission);
       const stageRepo = manager.getRepository(Stage);
 
-      const project = await projectRepo.save(projectRepo.create({
-        name: dto.name.trim(),
-        teamId: dto.teamId ?? null,
-        createdById,
-      }));
-
-      const normalizedPermissions = await this.normalizeTeamPermissions(
-        teamRepo,
-        dto.teamId ?? null,
-        dto.teamPermissions ?? [],
+      const project = await projectRepo.save(
+        projectRepo.create({ name: dto.name.trim(), createdById }),
       );
-
-      if (normalizedPermissions.length > 0) {
-        await permissionRepo.save(
-          normalizedPermissions.map((permission) =>
-            permissionRepo.create({ projectId: project.id, ...permission })),
-        );
-      }
 
       await stageRepo.save(
         DEFAULT_PROJECT_STAGES.map((stage) =>
@@ -66,41 +53,15 @@ export class ProjectsService {
     });
   }
 
-  async setTeamPermissions(projectId: string, dto: SetProjectTeamPermissionsDto): Promise<Project> {
-    return this.projectRepo.manager.transaction(async (manager) => {
-      const projectRepo = manager.getRepository(Project);
-      const teamRepo = manager.getRepository(Team);
-      const permissionRepo = manager.getRepository(ProjectTeamPermission);
-
-      const project = await projectRepo.findOneByOrFail({ id: projectId });
-      const normalizedPermissions = await this.normalizeTeamPermissions(
-        teamRepo,
-        project.teamId,
-        dto.teamPermissions ?? [],
-      );
-
-      await permissionRepo.delete({ projectId });
-
-      if (normalizedPermissions.length > 0) {
-        await permissionRepo.save(
-          normalizedPermissions.map((permission) =>
-            permissionRepo.create({ projectId, ...permission })),
-        );
-      }
-
-      return projectRepo.findOneByOrFail({ id: projectId });
-    });
-  }
-
   async remove(id: string): Promise<void> {
     await this.projectRepo.manager.transaction(async (manager) => {
       const projectRepo = manager.getRepository(Project);
-      const permissionRepo = manager.getRepository(ProjectTeamPermission);
+      const memberRepo = manager.getRepository(ProjectMember);
       const stageRepo = manager.getRepository(Stage);
       const cardRepo = manager.getRepository(Card);
 
       await projectRepo.findOneByOrFail({ id });
-      await permissionRepo.delete({ projectId: id });
+      await memberRepo.createQueryBuilder().delete().where('"projectId" = :id', { id }).execute();
       await cardRepo.softDelete({ projectId: id });
       await stageRepo.softDelete({ projectId: id });
       await projectRepo.softDelete(id);
@@ -117,32 +78,52 @@ export class ProjectsService {
     return { project, stages, cards, myPermission };
   }
 
-  private async normalizeTeamPermissions(
-    teamRepo: Repository<Team>,
-    ownerTeamId: string | null,
-    requestedPermissions: ProjectTeamPermissionDto[],
-  ): Promise<Array<{ teamId: string; permission: ProjectPermissionLevel }>> {
-    const permissionsByTeam = new Map<string, ProjectPermissionLevel>();
+  async getMembers(projectId: string, currentUserId: string) {
+    const [members, myPermission] = await Promise.all([
+      this.memberRepo.find({ where: { projectId } }),
+      this.permissionService.getUserProjectPermission(currentUserId, projectId),
+    ]);
+    return { members, myPermission };
+  }
 
-    for (const permission of requestedPermissions) {
-      permissionsByTeam.set(permission.teamId, permission.permission);
+  async addMember(projectId: string, dto: AddProjectMemberDto): Promise<ProjectMember> {
+    const project = await this.projectRepo.findOneByOrFail({ id: projectId });
+    if (project.createdById === dto.userId) {
+      throw new BadRequestException('Project creator is always admin — no member row needed');
     }
 
-    if (ownerTeamId) {
-      permissionsByTeam.set(ownerTeamId, ProjectPermissionLevel.ADMIN);
+    const existing = await this.memberRepo.findOne({ where: { projectId, userId: dto.userId } });
+    if (existing) throw new ConflictException('User is already a member of this project');
+
+    const user = await this.userRepo.findOneBy({ id: dto.userId });
+    if (!user) throw new NotFoundException(`User ${dto.userId} not found`);
+
+    return this.memberRepo.save(
+      this.memberRepo.create({
+        projectId,
+        userId: dto.userId,
+        role: dto.role ?? ProjectPermissionLevel.VIEWER,
+      }),
+    );
+  }
+
+  async updateMemberRole(
+    projectId: string, userId: string, dto: UpdateProjectMemberRoleDto,
+  ): Promise<ProjectMember> {
+    const project = await this.projectRepo.findOneByOrFail({ id: projectId });
+    if (project.createdById === userId) {
+      throw new BadRequestException('Cannot change the role of the project creator');
     }
+    const member = await this.memberRepo.findOneOrFail({ where: { projectId, userId } });
+    member.role = dto.role;
+    return this.memberRepo.save(member);
+  }
 
-    const teamIds = [...permissionsByTeam.keys()];
-    if (teamIds.length === 0) return [];
-
-    const teams = await teamRepo.findBy({ id: In(teamIds) });
-    if (teams.length !== teamIds.length) {
-      throw new BadRequestException('One or more teams do not exist');
+  async removeMember(projectId: string, userId: string): Promise<void> {
+    const project = await this.projectRepo.findOneByOrFail({ id: projectId });
+    if (project.createdById === userId) {
+      throw new BadRequestException('Cannot remove the project creator');
     }
-
-    return teamIds.map((teamId) => ({
-      teamId,
-      permission: permissionsByTeam.get(teamId)!,
-    }));
+    await this.memberRepo.delete({ projectId, userId });
   }
 }

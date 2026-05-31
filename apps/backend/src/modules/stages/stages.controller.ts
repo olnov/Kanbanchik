@@ -6,7 +6,7 @@ import { UpdateStageDto } from './dto/update-stage.dto';
 import { ReorderStagesDto } from './dto/reorder-stages.dto';
 import { ProjectPermissionGuard } from '../../common/guards/project-permission.guard';
 import { RequireProjectPermission } from '../../common/decorators/project-permission.decorator';
-import { ProjectPermissionLevel } from '../projects/project-team-permission.entity';
+import { ProjectPermissionLevel } from '../projects/project-member.entity';
 
 @ApiTags('stages')
 @ApiSecurity('x-user-id')

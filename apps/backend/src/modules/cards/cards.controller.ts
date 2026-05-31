@@ -6,7 +6,7 @@ import { UpdateCardDto } from './dto/update-card.dto';
 import { MoveCardDto } from './dto/move-card.dto';
 import { ProjectPermissionGuard } from '../../common/guards/project-permission.guard';
 import { RequireProjectPermission } from '../../common/decorators/project-permission.decorator';
-import { ProjectPermissionLevel } from '../projects/project-team-permission.entity';
+import { ProjectPermissionLevel } from '../projects/project-member.entity';
 
 @ApiTags('cards')
 @ApiSecurity('x-user-id')

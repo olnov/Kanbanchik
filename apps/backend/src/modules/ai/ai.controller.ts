@@ -5,7 +5,7 @@ import { ImportSpecDto } from './dto/import-spec.dto';
 import { ConfirmImportDto } from './dto/confirm-import.dto';
 import { ProjectPermissionGuard } from '../../common/guards/project-permission.guard';
 import { RequireProjectPermission } from '../../common/decorators/project-permission.decorator';
-import { ProjectPermissionLevel } from '../projects/project-team-permission.entity';
+import { ProjectPermissionLevel } from '../projects/project-member.entity';
 
 @ApiTags('ai')
 @ApiSecurity('x-user-id')
