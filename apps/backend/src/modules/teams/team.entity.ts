@@ -25,7 +25,6 @@ export class Team {
   })
   members: User[];
 
-  @OneToMany(() => Project, (project) => project.team)
   ownedProjects: Project[];
 
   @OneToMany(() => ProjectTeamPermission, (permission) => permission.team)

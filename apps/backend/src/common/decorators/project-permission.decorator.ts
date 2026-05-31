@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { ProjectPermissionLevel } from '../../modules/projects/project-team-permission.entity';
+import { ProjectPermissionLevel } from '../../modules/projects/project-member.entity';
 
 export const PROJECT_PERMISSION_KEY = 'projectPermission';
 

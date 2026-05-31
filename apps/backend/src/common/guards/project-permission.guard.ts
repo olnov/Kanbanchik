@@ -13,7 +13,7 @@ import {
 import { PermissionService } from '../../modules/permissions/permission.service';
 import { Stage } from '../../modules/stages/stage.entity';
 import { Card } from '../../modules/cards/card.entity';
-import { ProjectPermissionLevel } from '../../modules/projects/project-team-permission.entity';
+import { ProjectPermissionLevel } from '../../modules/projects/project-member.entity';
 import { User } from '../../modules/users/user.entity';
 
 const LEVEL_ORDER: Record<ProjectPermissionLevel, number> = {

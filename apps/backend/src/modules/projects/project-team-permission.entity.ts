@@ -39,7 +39,7 @@ export class ProjectTeamPermission {
   })
   permission: ProjectPermissionLevel;
 
-  @ManyToOne(() => Project, (project) => project.teamPermissions, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Project, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'projectId' })
   project: Project;
 

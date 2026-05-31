@@ -2,24 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from '../projects/project.entity';
-import { ProjectTeamPermission, ProjectPermissionLevel } from '../projects/project-team-permission.entity';
-import { Team } from '../teams/team.entity';
-
-const LEVEL_ORDER: Record<ProjectPermissionLevel, number> = {
-  [ProjectPermissionLevel.VIEWER]: 0,
-  [ProjectPermissionLevel.COLLABORATOR]: 1,
-  [ProjectPermissionLevel.ADMIN]: 2,
-};
+import { ProjectMember, ProjectPermissionLevel } from '../projects/project-member.entity';
 
 @Injectable()
 export class PermissionService {
   constructor(
     @InjectRepository(Project)
     private readonly projectRepo: Repository<Project>,
-    @InjectRepository(ProjectTeamPermission)
-    private readonly permRepo: Repository<ProjectTeamPermission>,
-    @InjectRepository(Team)
-    private readonly teamRepo: Repository<Team>,
+    @InjectRepository(ProjectMember)
+    private readonly memberRepo: Repository<ProjectMember>,
   ) {}
 
   async getUserProjectPermission(
@@ -31,25 +22,8 @@ export class PermissionService {
 
     if (project.createdById === userId) return ProjectPermissionLevel.ADMIN;
 
-    const userTeams = await this.teamRepo
-      .createQueryBuilder('team')
-      .innerJoin('team.members', 'member', 'member.id = :userId', { userId })
-      .getMany();
-
-    if (userTeams.length === 0) return null;
-
-    const teamIds = userTeams.map((t) => t.id);
-    const permissions = await this.permRepo
-      .createQueryBuilder('perm')
-      .where('perm.projectId = :projectId', { projectId })
-      .andWhere('perm.teamId IN (:...teamIds)', { teamIds })
-      .getMany();
-
-    if (permissions.length === 0) return null;
-
-    return permissions.reduce<ProjectPermissionLevel>((max, perm) => {
-      return LEVEL_ORDER[perm.permission] > LEVEL_ORDER[max] ? perm.permission : max;
-    }, ProjectPermissionLevel.VIEWER);
+    const member = await this.memberRepo.findOne({ where: { projectId, userId } });
+    return member?.role ?? null;
   }
 
   async getAccessibleProjectIds(userId: string): Promise<string[]> {
@@ -59,25 +33,15 @@ export class PermissionService {
       .select(['project.id'])
       .getMany();
 
-    const userTeams = await this.teamRepo
-      .createQueryBuilder('team')
-      .innerJoin('team.members', 'member', 'member.id = :userId', { userId })
-      .getMany();
-
-    if (userTeams.length === 0) {
-      return ownedIds.map((p) => p.id);
-    }
-
-    const teamIds = userTeams.map((t) => t.id);
-    const teamPermissions = await this.permRepo
-      .createQueryBuilder('perm')
-      .where('perm.teamId IN (:...teamIds)', { teamIds })
-      .select(['perm.projectId'])
+    const memberProjects = await this.memberRepo
+      .createQueryBuilder('member')
+      .where('member.userId = :userId', { userId })
+      .select(['member.projectId'])
       .getMany();
 
     const allIds = new Set([
       ...ownedIds.map((p) => p.id),
-      ...teamPermissions.map((p) => p.projectId),
+      ...memberProjects.map((m) => m.projectId),
     ]);
     return [...allIds];
   }
