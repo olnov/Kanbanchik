@@ -34,4 +34,7 @@ export class User {
 
   @ManyToMany(() => Team, (team) => team.members)
   teams: Team[];
+
+  @Column({ select: false, default: '' })
+  passwordHash: string;
 }

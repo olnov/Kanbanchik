@@ -13,6 +13,7 @@ const mockUser: User = {
   competencies: ['typescript'],
   availability: 'available',
   teams: [],
+  passwordHash: '',
 };
 
 const mockTeam: Team = {

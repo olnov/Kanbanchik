@@ -12,6 +12,7 @@ const mockUser: User = {
   competencies: ['typescript', 'react'],
   availability: 'available',
   teams: [],
+  passwordHash: '',
 };
 
 const mockRepo = {
