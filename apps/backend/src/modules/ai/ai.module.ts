@@ -7,9 +7,10 @@ import { MockAiProvider } from './providers/mock.provider';
 import { GroqAiProvider } from './providers/groq.provider';
 import { AiService } from './ai.service';
 import { AiController } from './ai.controller';
+import { PermissionsModule } from '../permissions/permissions.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Card])],
+  imports: [TypeOrmModule.forFeature([Card]), PermissionsModule],
   providers: [
     {
       provide: AI_PROVIDER,
