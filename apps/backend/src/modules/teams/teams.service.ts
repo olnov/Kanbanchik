@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Team } from './team.entity';
@@ -10,6 +10,8 @@ export class TeamsService {
   constructor(
     @InjectRepository(Team)
     private readonly repo: Repository<Team>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
   ) {}
 
   findAll(): Promise<Team[]> {
@@ -33,12 +35,32 @@ export class TeamsService {
         throw new BadRequestException('One or more team members do not exist');
       }
 
-      const team = await teamRepo.save(teamRepo.create({
-        name: dto.name.trim(),
-        members,
-      }));
-
+      const team = await teamRepo.save(teamRepo.create({ name: dto.name.trim(), members }));
       return teamRepo.findOneByOrFail({ id: team.id });
     });
+  }
+
+  async addMember(teamId: string, userId: string): Promise<Team> {
+    const [team, user] = await Promise.all([
+      this.repo.findOne({ where: { id: teamId }, relations: ['members'] }),
+      this.userRepo.findOneBy({ id: userId }),
+    ]);
+
+    if (!team) throw new NotFoundException(`Team ${teamId} not found`);
+    if (!user) throw new NotFoundException(`User ${userId} not found`);
+
+    const alreadyMember = team.members.some((m) => m.id === userId);
+    if (alreadyMember) return team;
+
+    team.members = [...team.members, user];
+    return this.repo.save(team);
+  }
+
+  async removeMember(teamId: string, userId: string): Promise<Team> {
+    const team = await this.repo.findOne({ where: { id: teamId }, relations: ['members'] });
+    if (!team) throw new NotFoundException(`Team ${teamId} not found`);
+
+    team.members = team.members.filter((m) => m.id !== userId);
+    return this.repo.save(team);
   }
 }
