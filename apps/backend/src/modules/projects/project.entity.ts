@@ -1,10 +1,10 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column, ManyToOne, DeleteDateColumn, OneToMany, JoinColumn,
+  Entity, PrimaryGeneratedColumn, Column, ManyToOne,
+  DeleteDateColumn, OneToMany, JoinColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Team } from '../teams/team.entity';
 import { User } from '../users/user.entity';
-import { ProjectTeamPermission } from './project-team-permission.entity';
+import { ProjectMember } from './project-member.entity';
 
 @Entity('projects')
 export class Project {
@@ -16,27 +16,16 @@ export class Project {
   @Column()
   name: string;
 
-  @ApiProperty({ required: false })
-  @Column({ type: 'uuid', nullable: true })
-  teamId: string | null;
-
   @ApiProperty({ required: false, nullable: true })
   @Column({ type: 'uuid', nullable: true })
   createdById: string | null;
-
-  @ManyToOne(() => Team, { nullable: true, eager: false })
-  @JoinColumn({ name: 'teamId' })
-  team: Team | null;
 
   @ManyToOne(() => User, { nullable: true, eager: false, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'createdById' })
   creator: User | null;
 
-  @ApiProperty({ type: () => ProjectTeamPermission, isArray: true })
-  @OneToMany(() => ProjectTeamPermission, (permission) => permission.project, {
-    eager: true,
-  })
-  teamPermissions: ProjectTeamPermission[];
+  @OneToMany(() => ProjectMember, (m) => m.project)
+  members: ProjectMember[];
 
   @ApiProperty({ required: false, nullable: true })
   @DeleteDateColumn({ nullable: true })
