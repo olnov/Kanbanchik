@@ -40,10 +40,13 @@ export interface Card {
   updatedAt: string;
 }
 
+export type ProjectPermissionLevel = 'viewer' | 'collaborator' | 'admin';
+
 export interface BoardData {
   project: Project;
   stages: Stage[];
   cards: Card[];
+  myPermission: ProjectPermissionLevel;
 }
 
 export interface CardDraft {

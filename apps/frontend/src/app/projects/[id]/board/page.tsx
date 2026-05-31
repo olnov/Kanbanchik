@@ -55,12 +55,14 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
         users={users}
         onCardClick={setSelectedCard}
         onAddCard={setAddToStage}
+        myPermission={data.myPermission}
       />
 
       {selectedCard && (
         <CardModal
           card={selectedCard}
           users={users}
+          myPermission={data.myPermission}
           onClose={() => setSelectedCard(null)}
           onSave={async (updated) => {
             await api.updateCard(updated.id!, updated);
