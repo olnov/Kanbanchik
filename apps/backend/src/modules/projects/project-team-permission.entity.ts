@@ -12,7 +12,7 @@ import { Project } from './project.entity';
 
 export enum ProjectPermissionLevel {
   VIEWER = 'viewer',
-  EDITOR = 'editor',
+  COLLABORATOR = 'collaborator',
   ADMIN = 'admin',
 }
 
