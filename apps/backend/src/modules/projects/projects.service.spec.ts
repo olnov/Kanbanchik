@@ -19,11 +19,9 @@ const mockTeam: Team = {
 const mockProject: Project = {
   id: 'proj-1',
   name: 'Alpha',
-  teamId: 'team-1',
   createdById: 'user-1',
-  team: mockTeam,
   creator: null,
-  teamPermissions: [],
+  members: [],
   deletedAt: null,
 };
 

@@ -9,6 +9,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { StagesModule } from './modules/stages/stages.module';
 import { CardsModule } from './modules/cards/cards.module';
 import { AiModule } from './modules/ai/ai.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { UserGuard } from './common/guards/user.guard';
 import { DevBootstrapService } from './database/dev-bootstrap.service';
 
@@ -17,10 +18,7 @@ import { DevBootstrapService } from './database/dev-bootstrap.service';
     ConfigModule.forRoot({ isGlobal: true }),
     LoggerModule.forRoot({
       pinoHttp: {
-        transport:
-          process.env.NODE_ENV !== 'production'
-            ? { target: 'pino-pretty' }
-            : undefined,
+        transport: process.env.NODE_ENV !== 'production' ? { target: 'pino-pretty' } : undefined,
       },
     }),
     TypeOrmModule.forRootAsync({
@@ -34,6 +32,7 @@ import { DevBootstrapService } from './database/dev-bootstrap.service';
         logging: process.env.NODE_ENV === 'development',
       }),
     }),
+    AuthModule,
     UsersModule,
     TeamsModule,
     ProjectsModule,

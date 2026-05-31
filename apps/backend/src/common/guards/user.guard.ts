@@ -1,5 +1,6 @@
-import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../modules/users/user.entity';
@@ -9,6 +10,7 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 export class UserGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
+    private readonly jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
   ) {}
@@ -21,19 +23,23 @@ export class UserGuard implements CanActivate {
     if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest<{
-      headers: Record<string, string>;
+      cookies: Record<string, string>;
       currentUser?: User;
     }>();
-    const userId = request.headers['x-user-id'];
 
-    if (!userId) {
-      throw new BadRequestException('X-User-Id header is required');
+    const token = request.cookies?.access_token;
+    if (!token) throw new UnauthorizedException('Authentication required');
+
+    let sub: string;
+    try {
+      const payload = this.jwtService.verify<{ sub: string }>(token);
+      sub = payload.sub;
+    } catch {
+      throw new UnauthorizedException('Invalid or expired token');
     }
 
-    const user = await this.userRepo.findOneBy({ id: userId });
-    if (!user) {
-      throw new BadRequestException(`User ${userId} not found`);
-    }
+    const user = await this.userRepo.findOneBy({ id: sub });
+    if (!user) throw new UnauthorizedException('User not found');
 
     request.currentUser = user;
     return true;
