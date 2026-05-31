@@ -6,10 +6,11 @@ import { Team } from '../teams/team.entity';
 import { Stage } from '../stages/stage.entity';
 import { Card } from '../cards/card.entity';
 import { PermissionService } from './permission.service';
+import { ProjectPermissionGuard } from '../../common/guards/project-permission.guard';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Project, ProjectTeamPermission, Team, Stage, Card])],
-  providers: [PermissionService],
-  exports: [PermissionService, TypeOrmModule],
+  providers: [PermissionService, ProjectPermissionGuard],
+  exports: [PermissionService, ProjectPermissionGuard, TypeOrmModule],
 })
 export class PermissionsModule {}
