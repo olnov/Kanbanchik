@@ -10,4 +10,4 @@ docs/
 .claude/
 .playwright-mcp/
 energy_widget_project_specification.md
-kanban_full_spec.md
+kanban_full_spec.md*.tsbuildinfo
