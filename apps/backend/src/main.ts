@@ -15,7 +15,7 @@ async function bootstrap() {
   );
 
   app.useLogger(app.get(Logger));
-  await app.register(fastifyCookie as Parameters<typeof app.register>[0]);
+  await app.register(fastifyCookie as unknown as Parameters<typeof app.register>[0]);
 
   app.setGlobalPrefix('api');
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });

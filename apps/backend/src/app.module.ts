@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 import { UsersModule } from './modules/users/users.module';
-import { TeamsModule } from './modules/teams/teams.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { StagesModule } from './modules/stages/stages.module';
 import { CardsModule } from './modules/cards/cards.module';
@@ -34,7 +33,6 @@ import { DevBootstrapService } from './database/dev-bootstrap.service';
     }),
     AuthModule,
     UsersModule,
-    TeamsModule,
     ProjectsModule,
     StagesModule,
     CardsModule,

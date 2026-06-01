@@ -11,7 +11,6 @@ const mockUser: User = {
   role: 'developer',
   competencies: ['typescript', 'react'],
   availability: 'available',
-  teams: [],
   passwordHash: '',
 };
 
