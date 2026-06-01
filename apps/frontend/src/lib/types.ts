@@ -1,21 +1,17 @@
 export interface User {
   id: string;
   name: string;
+  lastName: string;
   email: string;
   role: string;
   competencies: string[];
   availability: string;
 }
 
-export interface Team {
-  id: string;
-  name: string;
-}
-
 export interface Project {
   id: string;
   name: string;
-  teamId: string | null;
+  createdById: string | null;
 }
 
 export interface Stage {
@@ -41,6 +37,14 @@ export interface Card {
 }
 
 export type ProjectPermissionLevel = 'viewer' | 'collaborator' | 'admin';
+
+export interface ProjectMember {
+  id: string;
+  projectId: string;
+  userId: string;
+  role: ProjectPermissionLevel;
+  user: User;
+}
 
 export interface BoardData {
   project: Project;
