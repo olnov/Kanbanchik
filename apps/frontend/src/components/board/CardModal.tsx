@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
-import type { Card, User } from '@/lib/types';
+import type { Card, User, ProjectPermissionLevel } from '@/lib/types';
 import styles from './CardModal.module.css';
 
 interface CardModalProps {
@@ -11,12 +11,16 @@ interface CardModalProps {
   stageId?: string;
   projectId?: string;
   users: User[];
+  myPermission?: ProjectPermissionLevel;
   onClose: () => void;
   onSave: (card: Partial<Card>) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
-export function CardModal({ card, stageId, projectId, users, onClose, onSave, onDelete }: CardModalProps) {
+export function CardModal({ card, stageId, projectId, users, myPermission = 'admin', onClose, onSave, onDelete }: CardModalProps) {
+  const isViewer = myPermission === 'viewer';
+  const canDelete = myPermission === 'admin';
+
   const [summary, setSummary] = useState(card?.summary ?? '');
   const [description, setDescription] = useState(card?.description ?? '');
   const [type, setType] = useState(card?.type ?? 'task');
@@ -53,6 +57,7 @@ export function CardModal({ card, stageId, projectId, users, onClose, onSave, on
             onChange={(e) => setSummary(e.target.value)}
             placeholder="What needs to be done?"
             autoFocus
+            readOnly={isViewer}
           />
         </div>
 
@@ -63,13 +68,14 @@ export function CardModal({ card, stageId, projectId, users, onClose, onSave, on
             value={description ?? ''}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add more details…"
+            readOnly={isViewer}
           />
         </div>
 
         <div className={styles.row}>
           <div className={styles.field}>
             <label className={styles.label}>Type</label>
-            <select className={styles.select} value={type} onChange={(e) => setType(e.target.value)}>
+            <select className={styles.select} value={type} onChange={(e) => setType(e.target.value)} disabled={isViewer}>
               <option value="task">Task</option>
               <option value="story">Story</option>
               <option value="bug">Bug</option>
@@ -77,7 +83,7 @@ export function CardModal({ card, stageId, projectId, users, onClose, onSave, on
           </div>
           <div className={styles.field}>
             <label className={styles.label}>Priority</label>
-            <select className={styles.select} value={priority} onChange={(e) => setPriority(e.target.value)}>
+            <select className={styles.select} value={priority} onChange={(e) => setPriority(e.target.value)} disabled={isViewer}>
               <option value="high">High</option>
               <option value="medium">Medium</option>
               <option value="low">Low</option>
@@ -88,7 +94,7 @@ export function CardModal({ card, stageId, projectId, users, onClose, onSave, on
         <div className={styles.row}>
           <div className={styles.field}>
             <label className={styles.label}>Assignee</label>
-            <select className={styles.select} value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
+            <select className={styles.select} value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)} disabled={isViewer}>
               <option value="">Unassigned</option>
               {users.map((u) => (
                 <option key={u.id} value={u.id}>{u.name}</option>
@@ -102,13 +108,14 @@ export function CardModal({ card, stageId, projectId, users, onClose, onSave, on
               className={styles.input}
               value={dueDate ?? ''}
               onChange={(e) => setDueDate(e.target.value)}
+              readOnly={isViewer}
             />
           </div>
         </div>
 
         <div className={styles.footer}>
           <div>
-            {card && (
+            {card && canDelete && (
               <Button variant="danger" onClick={() => onDelete(card.id)}>
                 Delete
               </Button>
@@ -116,9 +123,11 @@ export function CardModal({ card, stageId, projectId, users, onClose, onSave, on
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <Button variant="ghost" onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSave} disabled={!summary.trim() || saving}>
-              {saving ? 'Saving…' : 'Save'}
-            </Button>
+            {!isViewer && (
+              <Button onClick={handleSave} disabled={!summary.trim() || saving}>
+                {saving ? 'Saving…' : 'Save'}
+              </Button>
+            )}
           </div>
         </div>
       </div>

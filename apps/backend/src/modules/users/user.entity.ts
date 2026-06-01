@@ -1,6 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Team } from '../teams/team.entity';
 
 @Entity('users')
 export class User {
@@ -21,7 +20,7 @@ export class User {
   email: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ default: '' })
   role: string;
 
   @ApiProperty({ type: [String] })
@@ -32,6 +31,6 @@ export class User {
   @Column({ default: 'available' })
   availability: string;
 
-  @ManyToMany(() => Team, (team) => team.members)
-  teams: Team[];
+  @Column({ select: false, default: '' })
+  passwordHash: string;
 }

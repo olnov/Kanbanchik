@@ -3,29 +3,21 @@ import { ApiTags, ApiSecurity } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Public } from '../../common/decorators/public.decorator';
 
 @ApiTags('users')
-@ApiSecurity('x-user-id')
+@ApiSecurity('access_token')
 @Controller('users')
 export class UsersController {
   constructor(private readonly service: UsersService) {}
 
   @Get()
-  @Public()
-  findAll() {
-    return this.service.findAll();
-  }
+  findAll() { return this.service.findAll(); }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(id);
-  }
+  findOne(@Param('id') id: string) { return this.service.findOne(id); }
 
   @Post()
-  create(@Body() dto: CreateUserDto) {
-    return this.service.create(dto);
-  }
+  create(@Body() dto: CreateUserDto) { return this.service.create(dto); }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateUserDto) {

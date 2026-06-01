@@ -7,7 +7,7 @@ import { Droppable } from '@hello-pangea/dnd';
 import styles from './Column.module.css';
 import { Card } from './Card';
 import { AddCardButton } from './AddCardButton';
-import type { Stage, Card as CardType, User } from '@/lib/types';
+import type { Stage, Card as CardType, User, ProjectPermissionLevel } from '@/lib/types';
 
 const COLUMN_COLORS: Record<number, { bg: string; color: string }> = {
   0: { bg: 'rgb(248 249 255 / 82%)', color: 'var(--color-indigo)' },
@@ -26,6 +26,7 @@ interface ColumnProps {
   onRenameStage: (stageId: string, name: string) => Promise<void>;
   onDeleteStage: (stageId: string) => Promise<void>;
   isBusy: boolean;
+  myPermission: ProjectPermissionLevel;
   innerRef?: (element: HTMLDivElement | null) => void;
   draggableProps?: DraggableProvidedDraggableProps;
   dragHandleProps?: DraggableProvidedDragHandleProps | null;
@@ -42,6 +43,7 @@ export function Column({
   onRenameStage,
   onDeleteStage,
   isBusy,
+  myPermission,
   innerRef,
   draggableProps,
   dragHandleProps,
@@ -121,39 +123,41 @@ export function Column({
           )}
           <span className={styles.count}>{cards.length}</span>
         </div>
-        <div className={styles.menuWrap}>
-          <button
-            type="button"
-            className={styles.menuButton}
-            onClick={() => setMenuOpen((current) => !current)}
-            aria-label={`Configure ${stage.name}`}
-            disabled={isBusy}
-          >
-            ...
-          </button>
-          {menuOpen && (
-            <div className={styles.menu}>
-              <button
-                type="button"
-                className={styles.menuItem}
-                onClick={() => {
-                  setDraftName(stage.name);
-                  setEditingName(true);
-                  setMenuOpen(false);
-                }}
-              >
-                Rename list
-              </button>
-              <button
-                type="button"
-                className={`${styles.menuItem} ${styles.menuItemDanger}`}
-                onClick={() => void handleDelete()}
-              >
-                Delete list
-              </button>
-            </div>
-          )}
-        </div>
+        {myPermission === 'admin' && (
+          <div className={styles.menuWrap}>
+            <button
+              type="button"
+              className={styles.menuButton}
+              onClick={() => setMenuOpen((current) => !current)}
+              aria-label={`Configure ${stage.name}`}
+              disabled={isBusy}
+            >
+              ...
+            </button>
+            {menuOpen && (
+              <div className={styles.menu}>
+                <button
+                  type="button"
+                  className={styles.menuItem}
+                  onClick={() => {
+                    setDraftName(stage.name);
+                    setEditingName(true);
+                    setMenuOpen(false);
+                  }}
+                >
+                  Rename list
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                  onClick={() => void handleDelete()}
+                >
+                  Delete list
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <Droppable droppableId={stage.id}>
         {(provided) => (
@@ -175,7 +179,7 @@ export function Column({
           </div>
         )}
       </Droppable>
-      <AddCardButton onClick={() => onAddCard(stage.id)} />
+      {myPermission !== 'viewer' && <AddCardButton onClick={() => onAddCard(stage.id)} />}
     </div>
   );
 }

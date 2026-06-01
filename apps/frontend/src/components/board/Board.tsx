@@ -7,16 +7,17 @@ import {
 import styles from './Board.module.css';
 import { Column } from './Column';
 import { api } from '@/lib/api';
-import type { BoardData, Card, User } from '@/lib/types';
+import type { BoardData, Card, User, ProjectPermissionLevel } from '@/lib/types';
 
 interface BoardProps {
   data: BoardData;
   users: User[];
   onCardClick: (card: Card) => void;
   onAddCard: (stageId: string) => void;
+  myPermission: ProjectPermissionLevel;
 }
 
-export function Board({ data: initialData, users, onCardClick, onAddCard }: BoardProps) {
+export function Board({ data: initialData, users, onCardClick, onAddCard, myPermission }: BoardProps) {
   const [stages, setStages] = useState(initialData.stages);
   const [cards, setCards] = useState(initialData.cards);
   const [newStageName, setNewStageName] = useState('');
@@ -160,7 +161,7 @@ export function Board({ data: initialData, users, onCardClick, onAddCard }: Boar
             >
               <div className={styles.board}>
                 {stages.map((stage, i) => (
-                  <Draggable key={stage.id} draggableId={`stage:${stage.id}`} index={i}>
+                  <Draggable key={stage.id} draggableId={`stage:${stage.id}`} index={i} isDragDisabled={myPermission !== 'admin'}>
                     {(stageProvided, snapshot) => (
                       <Column
                         stage={stage}
@@ -176,67 +177,70 @@ export function Board({ data: initialData, users, onCardClick, onAddCard }: Boar
                         draggableProps={stageProvided.draggableProps}
                         dragHandleProps={stageProvided.dragHandleProps}
                         isDragging={snapshot.isDragging}
+                        myPermission={myPermission}
                       />
                     )}
                   </Draggable>
                 ))}
                 {provided.placeholder}
-                <div className={styles.addListColumn}>
-                  {isAddingStage ? (
-                    <div className={styles.addListCard}>
-                      <input
-                        className={styles.addListInput}
-                        value={newStageName}
-                        onChange={(e) => setNewStageName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            void handleCreateStage();
-                          }
+                {myPermission === 'admin' && (
+                  <div className={styles.addListColumn}>
+                    {isAddingStage ? (
+                      <div className={styles.addListCard}>
+                        <input
+                          className={styles.addListInput}
+                          value={newStageName}
+                          onChange={(e) => setNewStageName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              void handleCreateStage();
+                            }
 
-                          if (e.key === 'Escape') {
-                            setIsAddingStage(false);
-                            setNewStageName('');
-                          }
-                        }}
-                        placeholder="List title"
-                        autoFocus
-                      />
-                      <div className={styles.addListActions}>
-                        <button
-                          type="button"
-                          className={styles.addListConfirm}
-                          onClick={() => void handleCreateStage()}
-                          disabled={creatingStage || !newStageName.trim()}
-                        >
-                          {creatingStage ? 'Adding...' : 'Add list'}
-                        </button>
-                        <button
-                          type="button"
-                          className={styles.addListCancel}
-                          onClick={() => {
-                            setIsAddingStage(false);
-                            setNewStageName('');
+                            if (e.key === 'Escape') {
+                              setIsAddingStage(false);
+                              setNewStageName('');
+                            }
                           }}
-                          disabled={creatingStage}
-                        >
-                          Cancel
-                        </button>
+                          placeholder="List title"
+                          autoFocus
+                        />
+                        <div className={styles.addListActions}>
+                          <button
+                            type="button"
+                            className={styles.addListConfirm}
+                            onClick={() => void handleCreateStage()}
+                            disabled={creatingStage || !newStageName.trim()}
+                          >
+                            {creatingStage ? 'Adding...' : 'Add list'}
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.addListCancel}
+                            onClick={() => {
+                              setIsAddingStage(false);
+                              setNewStageName('');
+                            }}
+                            disabled={creatingStage}
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      className={styles.addListTrigger}
-                      onClick={() => {
-                        setIsAddingStage(true);
-                        setError(null);
-                      }}
-                    >
-                      + Add another list
-                    </button>
-                  )}
-                </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className={styles.addListTrigger}
+                        onClick={() => {
+                          setIsAddingStage(true);
+                          setError(null);
+                        }}
+                      >
+                        + Add another list
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}

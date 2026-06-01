@@ -1,35 +1,84 @@
 import {
-  Controller, Get, Post, Delete, Param, Body, HttpCode, Patch,
+  Controller, Get, Post, Delete, Patch, Param, Body, HttpCode, Req, UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiSecurity } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { SetProjectTeamPermissionsDto } from './dto/set-project-team-permissions.dto';
+import { AddProjectMemberDto } from './dto/add-project-member.dto';
+import { UpdateProjectMemberRoleDto } from './dto/update-project-member-role.dto';
+import { ProjectPermissionGuard } from '../../common/guards/project-permission.guard';
+import { RequireProjectPermission } from '../../common/decorators/project-permission.decorator';
+import { ProjectPermissionLevel } from './project-member.entity';
+import { User } from '../users/user.entity';
 
 @ApiTags('projects')
-@ApiSecurity('x-user-id')
+@ApiSecurity('access_token')
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly service: ProjectsService) {}
 
   @Get()
-  findAll() { return this.service.findAll(); }
+  findAll(@Req() req: { currentUser: User }) {
+    return this.service.findAll(req.currentUser.id);
+  }
 
   @Get(':id')
-  findOne(@Param('id') id: string) { return this.service.findOne(id); }
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.VIEWER)
+  findOne(@Param('id') id: string) {
+    return this.service.findOne(id);
+  }
 
   @Post()
-  create(@Body() dto: CreateProjectDto) { return this.service.create(dto); }
-
-  @Patch(':id/team-permissions')
-  setTeamPermissions(@Param('id') id: string, @Body() dto: SetProjectTeamPermissionsDto) {
-    return this.service.setTeamPermissions(id, dto);
+  create(@Body() dto: CreateProjectDto, @Req() req: { currentUser: User }) {
+    return this.service.create(dto, req.currentUser.id);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') id: string) { return this.service.remove(id); }
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  remove(@Param('id') id: string) {
+    return this.service.remove(id);
+  }
 
   @Get(':id/board')
-  getBoard(@Param('id') id: string) { return this.service.getBoard(id); }
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.VIEWER)
+  getBoard(@Param('id') id: string, @Req() req: { currentUser: User }) {
+    return this.service.getBoard(id, req.currentUser.id);
+  }
+
+  @Get(':id/members')
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.VIEWER)
+  getMembers(@Param('id') id: string, @Req() req: { currentUser: User }) {
+    return this.service.getMembers(id, req.currentUser.id);
+  }
+
+  @Post(':id/members')
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  addMember(@Param('id') id: string, @Body() dto: AddProjectMemberDto) {
+    return this.service.addMember(id, dto);
+  }
+
+  @Patch(':id/members/:userId')
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  updateMemberRole(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @Body() dto: UpdateProjectMemberRoleDto,
+  ) {
+    return this.service.updateMemberRole(id, userId, dto);
+  }
+
+  @Delete(':id/members/:userId')
+  @HttpCode(204)
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  removeMember(@Param('id') id: string, @Param('userId') userId: string) {
+    return this.service.removeMember(id, userId);
+  }
 }

@@ -4,6 +4,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { VersioningType, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
+import fastifyCookie from '@fastify/cookie';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -14,29 +15,24 @@ async function bootstrap() {
   );
 
   app.useLogger(app.get(Logger));
+  await app.register(fastifyCookie as unknown as Parameters<typeof app.register>[0]);
 
   app.setGlobalPrefix('api');
-
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '1',
-  });
-
-  app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, transform: true }),
-  );
+  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   app.enableCors({
     origin: ['http://localhost:3000', 'app://-'],
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'x-user-id'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
   });
 
   const config = new DocumentBuilder()
     .setTitle('Kanbanchik API')
     .setDescription('Kanban board REST API')
     .setVersion('1.0')
-    .addApiKey({ type: 'apiKey', name: 'x-user-id', in: 'header' }, 'x-user-id')
+    .addCookieAuth('access_token')
     .build();
   SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config));
 

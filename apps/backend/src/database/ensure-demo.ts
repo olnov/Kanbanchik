@@ -1,9 +1,8 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { User } from '../modules/users/user.entity';
-import { Team } from '../modules/teams/team.entity';
 import { Project } from '../modules/projects/project.entity';
-import { ProjectTeamPermission } from '../modules/projects/project-team-permission.entity';
+import { ProjectMember } from '../modules/projects/project-member.entity';
 import { Stage } from '../modules/stages/stage.entity';
 import { Card } from '../modules/cards/card.entity';
 import { seedDemoWorkspace } from './demo-data';
@@ -14,7 +13,7 @@ loadEnvFromFile();
 const ds = new DataSource({
   type: 'postgres',
   url: process.env.DATABASE_URL,
-  entities: [User, Team, Project, ProjectTeamPermission, Stage, Card],
+  entities: [User, Project, ProjectMember, Stage, Card],
   synchronize: true,
 });
 
