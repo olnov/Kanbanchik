@@ -1,6 +1,8 @@
 'use client';
 
 import { use, useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { Settings } from 'lucide-react';
 import { Board } from '@/components/board/Board';
 import { CardModal } from '@/components/board/CardModal';
 import { AiImportModal } from '@/components/board/AiImportModal';
@@ -44,6 +46,13 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
       <div className={styles.header}>
         <h1 className={styles.heading}>{data.project.name}</h1>
         <div className={styles.actions}>
+          <Link
+            href={`/projects/${id}/settings`}
+            title="Project Settings"
+            style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', borderRadius: 6, color: 'var(--color-text-secondary)' }}
+          >
+            <Settings size={18} />
+          </Link>
           <Button variant="ghost" onClick={() => setShowAiImport(true)}>
             Import from spec
           </Button>
