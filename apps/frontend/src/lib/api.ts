@@ -53,6 +53,10 @@ export const api = {
   deleteProject: (id: string) =>
     fetchJson<void>(`/projects/${id}`, { method: 'DELETE' }),
 
+  // Users who can be assigned to cards in a project (owner + members)
+  getProjectAssignees: (projectId: string) =>
+    fetchJson<User[]>(`/projects/${projectId}/assignees`),
+
   // Project members
   getProjectMembers: (projectId: string) =>
     fetchJson<{ members: ProjectMember[]; myPermission: ProjectPermissionLevel }>(
