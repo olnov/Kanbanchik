@@ -1,0 +1,125 @@
+.body { display: flex; flex-direction: column; }
+
+.status { color: var(--color-text-secondary); font-size: 14px; padding: 8px 0; }
+
+.addRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.addSelect {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 4px;
+}
+
+.count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.list { display: flex; flex-direction: column; }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+.row + .row { border-top: 1px solid var(--color-border); }
+
+.avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.who { flex: 1; min-width: 0; }
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.roleSelect {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.role {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+}
+
+.ownerBadge {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-indigo);
+  background: var(--color-indigo-bg);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.remove {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: #ef4444;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+}
+.remove:hover { background: #fef2f2; }
+
+.error { color: #ef4444; font-size: 13px; margin-top: 12px; }

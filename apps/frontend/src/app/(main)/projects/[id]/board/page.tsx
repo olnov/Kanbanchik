@@ -1,11 +1,11 @@
 'use client';
 
 import { use, useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { Settings } from 'lucide-react';
 import { Board } from '@/components/board/Board';
 import { CardModal } from '@/components/board/CardModal';
 import { AiImportModal } from '@/components/board/AiImportModal';
+import { ProjectSettingsModal } from '@/components/board/ProjectSettingsModal';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/lib/api';
 import type { BoardData, Card, User } from '@/lib/types';
@@ -18,6 +18,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [addToStage, setAddToStage] = useState<string | null>(null);
   const [showAiImport, setShowAiImport] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadBoard = useCallback(async () => {
@@ -46,13 +47,14 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
       <div className={styles.header}>
         <h1 className={styles.heading}>{data.project.name}</h1>
         <div className={styles.actions}>
-          <Link
-            href={`/projects/${id}/settings`}
-            title="Project Settings"
+          <button
+            type="button"
+            onClick={() => setShowSettings(true)}
+            title="Project settings"
             style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', borderRadius: 6, color: 'var(--color-text-secondary)' }}
           >
             <Settings size={18} />
-          </Link>
+          </button>
           <Button variant="ghost" onClick={() => setShowAiImport(true)}>
             Import from spec
           </Button>
@@ -101,6 +103,14 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
           onDelete={async () => {
             setAddToStage(null);
           }}
+        />
+      )}
+
+      {showSettings && (
+        <ProjectSettingsModal
+          projectId={id}
+          onClose={() => setShowSettings(false)}
+          onChange={loadBoard}
         />
       )}
 
