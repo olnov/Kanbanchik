@@ -105,24 +105,69 @@
   margin-top: 8px;
 }
 
-.userLabel {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-text-muted);
-  margin-bottom: 6px;
+.userCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
-.userSelect {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: var(--radius-md);
+.avatar {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-green-bg);
+  color: #15803d;
   font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.userInfo {
+  min-width: 0;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
   color: var(--color-text-primary);
   background: rgba(255, 255, 255, 0.86);
   cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.logoutButton:hover {
+  background: #ffffff;
+  border-color: var(--color-text-muted);
 }
 
 .errorHint {

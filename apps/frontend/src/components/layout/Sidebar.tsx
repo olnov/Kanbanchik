@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { LogOut, X } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { PROJECTS_UPDATED_EVENT } from '@/lib/project-events';
@@ -14,6 +14,12 @@ import styles from './Sidebar.module.css';
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+}
+
+function initials(name: string, lastName?: string): string {
+  const first = name.trim().charAt(0);
+  const second = (lastName ?? name.trim().split(/\s+/)[1] ?? '').charAt(0);
+  return (first + second).toUpperCase() || '?';
 }
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
@@ -71,24 +77,25 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
         <div className={styles.userSection}>
           {currentUser && (
-            <>
-              <div className={styles.userLabel}>
-                {currentUser.name} {currentUser.lastName}
-              </div>
-              {currentUser.role && (
-                <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
-                  {currentUser.role}
+            <div className={styles.userCard}>
+              <span className={styles.avatar} aria-hidden>
+                {initials(currentUser.name, currentUser.lastName)}
+              </span>
+              <div className={styles.userInfo}>
+                <div className={styles.userName}>
+                  {currentUser.name} {currentUser.lastName}
                 </div>
-              )}
-            </>
+                <div className={styles.userEmail}>{currentUser.email}</div>
+              </div>
+            </div>
           )}
           <button
             type="button"
-            className={styles.userSelect}
-            style={{ cursor: 'pointer', textAlign: 'left' }}
+            className={styles.logoutButton}
             onClick={() => void handleLogout()}
           >
-            Log out
+            <LogOut size={16} />
+            Logout
           </button>
         </div>
       </nav>
