@@ -4,9 +4,17 @@ import { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import type { CardDraft, Stage } from '@/lib/types';
 import styles from './AiImportModal.module.css';
+
+function errorMessage(err: unknown): string {
+  if (err instanceof ApiError) {
+    const idx = err.message.indexOf(' — ');
+    if (idx >= 0) return err.message.slice(idx + 3);
+  }
+  return err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+}
 
 interface AiImportModalProps {
   projectId: string;
@@ -20,12 +28,19 @@ export function AiImportModal({ projectId, stages, onClose, onConfirm }: AiImpor
   const [drafts, setDrafts] = useState<CardDraft[] | null>(null);
   const [targetStageId, setTargetStageId] = useState(stages[0]?.id ?? '');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleImport = async () => {
     setLoading(true);
-    const result = await api.importSpec(text);
-    setDrafts(result);
-    setLoading(false);
+    setError(null);
+    try {
+      const result = await api.importSpec(text);
+      setDrafts(result);
+    } catch (err) {
+      setError(errorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRemove = (index: number) => {
@@ -35,9 +50,15 @@ export function AiImportModal({ projectId, stages, onClose, onConfirm }: AiImpor
   const handleConfirm = async () => {
     if (!drafts) return;
     setLoading(true);
-    await api.confirmImport(projectId, targetStageId, drafts);
-    await onConfirm();
-    setLoading(false);
+    setError(null);
+    try {
+      await api.confirmImport(projectId, targetStageId, drafts);
+      await onConfirm();
+    } catch (err) {
+      setError(errorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,6 +74,7 @@ export function AiImportModal({ projectId, stages, onClose, onConfirm }: AiImpor
             onChange={(e) => setText(e.target.value)}
             placeholder="Paste spec text here…"
           />
+          {error && <div className={styles.error}>{error}</div>}
           <div className={styles.footer}>
             <Button variant="ghost" onClick={onClose}>Cancel</Button>
             <Button onClick={handleImport} disabled={text.length < 10 || loading}>
@@ -88,6 +110,7 @@ export function AiImportModal({ projectId, stages, onClose, onConfirm }: AiImpor
               </div>
             ))}
           </div>
+          {error && <div className={styles.error}>{error}</div>}
           <div className={styles.footer}>
             <Button variant="ghost" onClick={() => setDrafts(null)}>Back</Button>
             <Button onClick={handleConfirm} disabled={drafts.length === 0 || loading}>

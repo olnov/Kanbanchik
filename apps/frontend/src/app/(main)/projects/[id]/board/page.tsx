@@ -55,9 +55,11 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
           >
             <Settings size={18} />
           </button>
-          <Button variant="ghost" onClick={() => setShowAiImport(true)}>
-            Import from spec
-          </Button>
+          {data.myPermission !== 'viewer' && (
+            <Button variant="ghost" onClick={() => setShowAiImport(true)}>
+              Import from spec
+            </Button>
+          )}
         </div>
       </div>
 
