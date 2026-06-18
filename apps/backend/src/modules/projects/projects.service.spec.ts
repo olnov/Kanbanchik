@@ -100,4 +100,26 @@ describe('ProjectsService', () => {
     expect(txStageRepo.softDelete).toHaveBeenCalledWith({ projectId: 'proj-1' });
     expect(txProjectRepo.softDelete).toHaveBeenCalledWith('proj-1');
   });
+
+  it('getAssignableUsers returns owner plus members without duplicates', async () => {
+    const owner = { id: 'user-1', name: 'Owner' } as User;
+    const memberUser = { id: 'user-2', name: 'Member' } as User;
+
+    const module = await Test.createTestingModule({
+      providers: [
+        ProjectsService,
+        { provide: getRepositoryToken(Project), useValue: { ...mockRepo, findOneByOrFail: jest.fn().mockResolvedValue(mockProject) } },
+        { provide: getRepositoryToken(Stage), useValue: { find: jest.fn().mockResolvedValue([]) } },
+        { provide: getRepositoryToken(Card), useValue: { find: jest.fn().mockResolvedValue([]) } },
+        { provide: getRepositoryToken(ProjectMember), useValue: { find: jest.fn().mockResolvedValue([{ user: memberUser }]) } },
+        { provide: getRepositoryToken(User), useValue: { findOneBy: jest.fn().mockResolvedValue(owner) } },
+        { provide: PermissionService, useValue: mockPermissionService },
+      ],
+    }).compile();
+    const svc = module.get(ProjectsService);
+
+    const result = await svc.getAssignableUsers('proj-1');
+    expect(result).toEqual(expect.arrayContaining([owner, memberUser]));
+    expect(result).toHaveLength(2);
+  });
 });
