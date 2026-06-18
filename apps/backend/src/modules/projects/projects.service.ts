@@ -86,6 +86,23 @@ export class ProjectsService {
     return { members, myPermission };
   }
 
+  async getAssignableUsers(projectId: string): Promise<User[]> {
+    const [project, members] = await Promise.all([
+      this.projectRepo.findOneByOrFail({ id: projectId }),
+      this.memberRepo.find({ where: { projectId } }),
+    ]);
+
+    const usersById = new Map<string, User>();
+    for (const member of members) {
+      if (member.user) usersById.set(member.user.id, member.user);
+    }
+    if (project.createdById) {
+      const owner = await this.userRepo.findOneBy({ id: project.createdById });
+      if (owner) usersById.set(owner.id, owner);
+    }
+    return [...usersById.values()];
+  }
+
   async addMember(projectId: string, dto: AddProjectMemberDto): Promise<ProjectMember> {
     const project = await this.projectRepo.findOneByOrFail({ id: projectId });
     if (project.createdById === dto.userId) {

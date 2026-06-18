@@ -49,6 +49,13 @@ export class ProjectsController {
     return this.service.getBoard(id, req.currentUser.id);
   }
 
+  @Get(':id/assignees')
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.VIEWER)
+  getAssignableUsers(@Param('id') id: string) {
+    return this.service.getAssignableUsers(id);
+  }
+
   @Get(':id/members')
   @UseGuards(ProjectPermissionGuard)
   @RequireProjectPermission(ProjectPermissionLevel.VIEWER)

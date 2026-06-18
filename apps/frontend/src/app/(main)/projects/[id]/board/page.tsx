@@ -22,12 +22,12 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
 
   const loadBoard = useCallback(async () => {
     try {
-      const [board, allUsers] = await Promise.all([
+      const [board, projectUsers] = await Promise.all([
         api.getBoard(id),
-        api.getUsers(),
+        api.getProjectAssignees(id),
       ]);
       setData(board);
-      setUsers(allUsers);
+      setUsers(projectUsers);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load board');
