@@ -1,19 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Card } from './card.entity';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { MoveCardDto } from './dto/move-card.dto';
+import { PermissionService } from '../permissions/permission.service';
+import { ProjectPermissionLevel } from '../projects/project-member.entity';
 
 @Injectable()
 export class CardsService {
   constructor(
     @InjectRepository(Card)
     private readonly repo: Repository<Card>,
+    private readonly permissionService: PermissionService,
   ) {}
 
+  // Viewers (and non-members) can read the board but must not be assigned cards.
+  private async assertAssignable(assigneeId: string, projectId: string): Promise<void> {
+    const permission = await this.permissionService.getUserProjectPermission(assigneeId, projectId);
+    if (permission === null || permission === ProjectPermissionLevel.VIEWER) {
+      throw new BadRequestException('Assignee must be a collaborator or admin on this project');
+    }
+  }
+
   async create(dto: CreateCardDto): Promise<Card> {
+    if (dto.assigneeId) {
+      await this.assertAssignable(dto.assigneeId, dto.projectId);
+    }
     const stageCards = await this.repo.find({
       where: { stageId: dto.stageId },
       order: { order: 'DESC' },
@@ -24,6 +38,10 @@ export class CardsService {
   }
 
   async update(id: string, dto: UpdateCardDto): Promise<Card> {
+    if (dto.assigneeId) {
+      const card = await this.repo.findOneByOrFail({ id });
+      await this.assertAssignable(dto.assigneeId, dto.projectId ?? card.projectId);
+    }
     await this.repo.update(id, dto);
     return this.repo.findOneByOrFail({ id });
   }

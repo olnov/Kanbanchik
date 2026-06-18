@@ -2,7 +2,7 @@ import {
   BadRequestException, ConflictException, Injectable, NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { Project } from './project.entity';
 import { ProjectMember, ProjectPermissionLevel } from './project-member.entity';
 import { Stage } from '../stages/stage.entity';
@@ -87,9 +87,13 @@ export class ProjectsService {
   }
 
   async getAssignableUsers(projectId: string): Promise<User[]> {
+    // Viewers can read the board but cannot be assigned cards, so exclude them.
+    // The project owner is always an admin and is added separately below.
     const [project, members] = await Promise.all([
       this.projectRepo.findOneByOrFail({ id: projectId }),
-      this.memberRepo.find({ where: { projectId } }),
+      this.memberRepo.find({
+        where: { projectId, role: Not(ProjectPermissionLevel.VIEWER) },
+      }),
     ]);
 
     const usersById = new Map<string, User>();
