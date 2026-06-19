@@ -16,8 +16,10 @@ as a local login.
   [Login API](https://developers.mattermost.com/api-documentation/#/operations/Login)
   (`POST {server}/api/v4/users/login`). No OAuth redirect flow.
 - **Server URL:** Single configured Mattermost instance via backend env var.
-- **Account mapping:** Match an existing local user by email; otherwise auto-provision
-  (JIT) a new local user from the Mattermost profile.
+- **Account mapping:** Re-match returning users by stored `mattermostUserId`. For a
+  first-time Mattermost user whose email already belongs to *any* existing account,
+  reject and notify (no silent merge). Otherwise auto-provision (JIT) a new local user
+  from the Mattermost profile.
 - **Login UI:** Keep the local form; add a separate "Sign in with Mattermost" button
   that reveals a Mattermost credential panel.
 - **Mixed login:** Provisioned accounts are Mattermost-only (no local password). Local
@@ -34,7 +36,7 @@ as a local login.
    |                                       |
    |                    POST {MATTERMOST_URL}/api/v4/users/login
    |                                       |  (200 -> MM profile)
-   |                          match-by-email else JIT-provision (local User)
+   |              match-by-mattermostUserId / email-conflict / JIT-provision
    |                                       |
    |<-------- set access_token JWT cookie + return User <--
 ```
@@ -62,9 +64,12 @@ confirm authentication succeeded; Kanbanchik mints its own JWT exactly as it doe
 
 **`AuthService.loginWithMattermost(loginId, password): Promise<User>`**
 1. `profile = await mattermostService.authenticate(loginId, password)`.
-2. Find local user by `profile.email`.
-3. If found: return it (no profile overwrite in this scope).
-4. If not found: create a `User` with `name = profile.firstName || profile.username`,
+2. Find local user by `mattermostUserId === profile.id`. If found: return it (normal
+   returning-user login; no profile overwrite in this scope).
+3. Otherwise find any user by `profile.email`. If found: throw
+   `ConflictException('An account with this email already exists')` — do not merge or
+   log in. (Collisions are not expected; the user is told to use their existing account.)
+4. If neither match: create a `User` with `name = profile.firstName || profile.username`,
    `lastName = profile.lastName`, `email = profile.email`, `role: ''`,
    `passwordHash: ''`, `authProvider: 'mattermost'`,
    `mattermostUserId: profile.id`. Save and return.
@@ -109,16 +114,19 @@ These apply automatically in dev via TypeORM `synchronize`.
 
 - Invalid Mattermost credentials → `401` → form shows "Invalid Mattermost credentials".
 - Mattermost unreachable / not configured → `503` → form shows a friendly message.
-- Email of an existing local account: that account is reused (logged in), regardless of
-  its original `authProvider`. Acceptable for this scope.
+- Email of a first-time Mattermost user already belongs to an existing account → `409` →
+  form shows "An account with this email already exists". No silent merge or login.
 
 ## Testing
 
 - `MattermostService` unit tests (mock `fetch`): 200 → mapped profile; 401 → throws
   `UnauthorizedException`; network error → `ServiceUnavailableException`.
 - `AuthService.loginWithMattermost` unit tests (mirroring `auth.service.spec.ts`):
-  - provision path: no existing user → creates one with expected fields;
-  - match path: existing user by email → returns it without creating a duplicate.
+  - provision path: no match by `mattermostUserId` or email → creates one with expected fields;
+  - returning-user path: existing user with matching `mattermostUserId` → returns it,
+    no duplicate created;
+  - conflict path: no `mattermostUserId` match but email already exists → throws
+    `ConflictException`, no user created.
 
 ## Out of scope
 
