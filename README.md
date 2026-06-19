@@ -88,7 +88,23 @@ AI_PROVIDER=mock
 GROQ_API_KEY=
 GROQ_MODEL=openai/gpt-oss-20b
 AUTO_SEED_DEMO=true
+MATTERMOST_ENABLED=false
+MATTERMOST_URL=
 ```
+
+### Mattermost login (optional)
+
+Users can sign in with their Mattermost credentials as an alternative to local
+email/password. To enable it:
+
+1. Set `MATTERMOST_ENABLED=true` and `MATTERMOST_URL=https://your-mattermost-host` in `apps/backend/.env`.
+2. Set `NEXT_PUBLIC_MATTERMOST_ENABLED=true` for the frontend (e.g. in `apps/frontend/.env.local`).
+3. Restart both apps.
+
+On first login, a Kanbanchik account is provisioned automatically from the Mattermost
+profile. Returning users are matched by their Mattermost user id. If a Mattermost
+profile's email already belongs to an existing account, the login is rejected so accounts
+are never silently merged.
 
 ### Run apps
 

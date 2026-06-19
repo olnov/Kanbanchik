@@ -16,6 +16,11 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const mattermostEnabled = process.env.NEXT_PUBLIC_MATTERMOST_ENABLED === 'true';
+  const [showMattermost, setShowMattermost] = useState(false);
+  const [mmLoginId, setMmLoginId] = useState('');
+  const [mmPassword, setMmPassword] = useState('');
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -26,6 +31,21 @@ export default function LoginPage() {
       router.replace('/projects');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMattermostSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const user = await api.loginMattermost(mmLoginId, mmPassword);
+      setCurrentUser(user);
+      router.replace('/projects');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Mattermost login failed');
     } finally {
       setLoading(false);
     }
@@ -56,6 +76,34 @@ export default function LoginPage() {
             </Link>
           </div>
         </form>
+        {mattermostEnabled && (
+          <div className={styles.altAuth}>
+            <div className={styles.divider}><span>or</span></div>
+            {!showMattermost ? (
+              <Button type="button" variant="ghost" onClick={() => setShowMattermost(true)}>
+                Sign in with Mattermost
+              </Button>
+            ) : (
+              <form onSubmit={(e) => void handleMattermostSubmit(e)}>
+                <div className={styles.field}>
+                  <label className={styles.label}>Mattermost username or email</label>
+                  <input className={styles.input} type="text" value={mmLoginId}
+                    onChange={(e) => setMmLoginId(e.target.value)} required autoFocus />
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.label}>Mattermost password</label>
+                  <input className={styles.input} type="password" value={mmPassword}
+                    onChange={(e) => setMmPassword(e.target.value)} required />
+                </div>
+                <div className={styles.footer}>
+                  <Button type="submit" disabled={loading || !mmLoginId || !mmPassword}>
+                    {loading ? 'Signing in…' : 'Sign in with Mattermost'}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
