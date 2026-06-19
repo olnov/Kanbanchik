@@ -11,6 +11,8 @@ const mockUser: User = {
   role: 'developer',
   competencies: ['typescript', 'react'],
   availability: 'available',
+  authProvider: 'local',
+  mattermostUserId: null,
   passwordHash: '',
 };
 
