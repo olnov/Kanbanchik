@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
+import { MattermostService } from './mattermost.service';
 import { User } from '../users/user.entity';
 
 const mockUserRepo = {
@@ -14,6 +15,7 @@ const mockUserRepo = {
   createQueryBuilder: jest.fn(),
 };
 const mockJwt = { sign: jest.fn().mockReturnValue('token') };
+const mockMattermost = { authenticate: jest.fn() };
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -25,6 +27,7 @@ describe('AuthService', () => {
         AuthService,
         { provide: getRepositoryToken(User), useValue: mockUserRepo },
         { provide: JwtService, useValue: mockJwt },
+        { provide: MattermostService, useValue: mockMattermost },
       ],
     }).compile();
     service = module.get(AuthService);
@@ -74,6 +77,58 @@ describe('AuthService', () => {
       mockUserRepo.findOneByOrFail.mockResolvedValue({ id: 'u1', email: 'x@y.com' });
       const result = await service.login({ email: 'x@y.com', password: 'secret' });
       expect(result).toEqual({ id: 'u1', email: 'x@y.com' });
+    });
+  });
+
+  describe('loginWithMattermost', () => {
+    const profile = {
+      id: 'mm-1', email: 'a@b.com', firstName: 'Al', lastName: 'Ice', username: 'alice',
+    };
+
+    it('returns existing user matched by mattermostUserId', async () => {
+      mockMattermost.authenticate.mockResolvedValue(profile);
+      mockUserRepo.findOneBy.mockImplementation(({ mattermostUserId }) =>
+        mattermostUserId === 'mm-1' ? { id: 'u1', email: 'a@b.com' } : null,
+      );
+
+      const result = await service.loginWithMattermost('alice', 'pw');
+
+      expect(result).toEqual({ id: 'u1', email: 'a@b.com' });
+      expect(mockUserRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('throws ConflictException when email already belongs to another account', async () => {
+      mockMattermost.authenticate.mockResolvedValue(profile);
+      mockUserRepo.findOneBy.mockImplementation(({ mattermostUserId, email }) => {
+        if (mattermostUserId) return null;
+        if (email === 'a@b.com') return { id: 'local-1', email: 'a@b.com' };
+        return null;
+      });
+
+      await expect(service.loginWithMattermost('alice', 'pw')).rejects.toThrow(ConflictException);
+      expect(mockUserRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('provisions a new Mattermost user when no match exists', async () => {
+      mockMattermost.authenticate.mockResolvedValue(profile);
+      mockUserRepo.findOneBy.mockResolvedValue(null);
+      mockUserRepo.create.mockImplementation((v) => v);
+      mockUserRepo.save.mockResolvedValue({ id: 'new-1' });
+      mockUserRepo.findOneByOrFail.mockResolvedValue({ id: 'new-1', email: 'a@b.com' });
+
+      const result = await service.loginWithMattermost('alice', 'pw');
+
+      expect(result).toEqual({ id: 'new-1', email: 'a@b.com' });
+      expect(mockUserRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'a@b.com',
+          name: 'Al',
+          lastName: 'Ice',
+          authProvider: 'mattermost',
+          mattermostUserId: 'mm-1',
+          passwordHash: '',
+        }),
+      );
     });
   });
 
