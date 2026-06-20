@@ -151,7 +151,7 @@
   transition: background 0.18s ease;
 }
 
-.panel.open { background: var(--color-sticky-note-mint); }
+.panel.open { background: #ffffff; }
 
 .panelHeader {
   width: 100%;
