@@ -18,6 +18,14 @@ function Chevron() {
   );
 }
 
+function Sparkle() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2l1.8 6.4L20 10l-6.2 1.6L12 18l-1.8-6.4L4 10l6.2-1.6z" />
+    </svg>
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const { setCurrentUser } = useAuth();
@@ -88,6 +96,7 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)} placeholder="Your password" required />
       </div>
       <button className={styles.primary} type="submit" disabled={loading || !email || !password}>
+        <span className={styles.arrow} aria-hidden="true">→</span>
         {loading ? 'Signing in…' : 'Sign in'}
       </button>
     </form>
@@ -95,8 +104,8 @@ export default function LoginPage() {
 
   return (
     <>
-      <p className={styles.eyebrow}>Welcome back</p>
-      <h2 className={styles.title}>Sign in</h2>
+      <span className={styles.badge}><Sparkle /> Welcome back</span>
+      <h2 className={styles.headline}>Hello <span className={styles.highlight}>again</span>.</h2>
       {error && <div className={styles.error}>{error}</div>}
 
       {!mattermostEnabled ? (
@@ -152,6 +161,7 @@ export default function LoginPage() {
                         onChange={(e) => setMmPassword(e.target.value)} required />
                     </div>
                     <button className={styles.primary} type="submit" disabled={loading || !mmLoginId || !mmPassword}>
+                      <span className={styles.arrow} aria-hidden="true">→</span>
                       {loading ? 'Signing in…' : 'Sign in with Mattermost'}
                     </button>
                   </form>

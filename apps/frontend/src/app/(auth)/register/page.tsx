@@ -34,8 +34,13 @@ export default function RegisterPage() {
 
   return (
     <>
-      <p className={styles.eyebrow}>Get started</p>
-      <h2 className={styles.title}>Create account</h2>
+      <span className={styles.badge}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2l1.8 6.4L20 10l-6.2 1.6L12 18l-1.8-6.4L4 10l6.2-1.6z" />
+        </svg>
+        New here
+      </span>
+      <h2 className={styles.headline}>Let&apos;s <span className={styles.highlight}>begin</span>.</h2>
       {error && <div className={styles.error}>{error}</div>}
       <form onSubmit={(e) => void handleSubmit(e)}>
         <div className={styles.row}>
@@ -56,10 +61,12 @@ export default function RegisterPage() {
         <div className={styles.field}>
           <label className={styles.label} htmlFor="password">Password</label>
           <input className={styles.input} id="password" type="password" value={form.password}
-            onChange={set('password')} placeholder="At least 8 characters" required minLength={8} />
+            onChange={set('password')} placeholder="Create a password" required minLength={8} />
+          <span className={styles.hint}>At least 8 characters</span>
         </div>
         <button className={styles.primary} type="submit"
           disabled={loading || !form.name || !form.email || !form.password}>
+          <span className={styles.arrow} aria-hidden="true">→</span>
           {loading ? 'Creating account…' : 'Create account'}
         </button>
       </form>

@@ -1,16 +1,21 @@
 .viewport {
-  /* Tracky design tokens — scoped to the auth route group */
-  --ink: #151b31;
-  --coral: #ff5858;
-  --mint: #86e0c1;
-  --butter: #fedf89;
-  --graphite: #333333;
-  --slate: #6d6f75;
-  --ash: #f2f2f2;
-  --paper: #ffffff;
-  --stone: #e8e7e5;
-  --warm-shadow: rgba(138, 133, 125, 0.2) 0px 1px 4px 0px;
+  /* Say Briefly design tokens (docs/variables.css) — scoped to the auth route group */
+  --color-forest-ink: #1a3300;
+  --color-highlighter-yellow: #ffe95c;
+  --color-cream-paper: #fcfaf5;
+  --color-pencil-gray: #b6b6b6;
+  --color-whisper-gray: #f1f1f1;
+  --color-sticky-note-teal: #a8e5e5;
+  --color-sticky-note-mint: #d5f5c2;
+  --color-sticky-note-blush: #f6d0ff;
+  --color-terracotta: #cb5521;
 
+  --radius-md: 6px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+  --shadow-subtle: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
+
+  position: relative;
   min-height: 100vh;
   height: 100vh;
   overflow-y: auto;
@@ -18,212 +23,77 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: var(--ash);
+  background: var(--color-cream-paper);
+  color: var(--color-forest-ink);
   font-family: var(--font-inter), system-ui, sans-serif;
-  letter-spacing: -0.01em;
-  color: var(--ink);
 }
 
-.shell {
-  display: grid;
-  grid-template-columns: 0.92fr 1.08fr;
-  width: 100%;
-  max-width: 960px;
-  background: var(--paper);
-  border-radius: 24px;
-  box-shadow: var(--warm-shadow);
-  overflow: hidden;
-  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes rise {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Brand panel (dark feature card) ───────────────────────────── */
-.brand {
-  position: relative;
-  background: var(--ink);
-  color: var(--paper);
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  overflow: hidden;
-}
-
-.wordmark {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-inter), sans-serif;
-  font-weight: 600;
-  font-size: 18px;
-  letter-spacing: -0.02em;
-}
-
-.mark {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--mint);
-  color: var(--ink);
-  flex-shrink: 0;
-}
-
-.headline {
-  font-family: var(--font-display), sans-serif;
-  font-weight: 400;
-  font-size: clamp(30px, 4vw, 40px);
-  line-height: 1.08;
-  letter-spacing: 0.01em;
-  margin-top: 8px;
-}
-
-.accent {
-  position: relative;
-  color: var(--coral);
-  white-space: nowrap;
-}
-
-.squiggle {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -10px;
-  width: 100%;
-  height: 8px;
-  color: var(--coral);
-}
-
-.tagline {
-  font-size: 16px;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.72);
-  max-width: 30ch;
-}
-
-/* signature: tilted overlap preview card + mint blob + doodle */
-.signature {
-  position: relative;
-  margin-top: auto;
-  padding-top: 28px;
-  min-height: 150px;
-}
-
-.blob {
-  position: absolute;
-  left: -22px;
-  bottom: 6px;
-  width: 112px;
-  height: 112px;
-  background: var(--mint);
-  opacity: 0.85;
-  border-radius: 64% 36% 57% 43% / 49% 60% 40% 51%;
+/* Decorative monoline sketches — atmosphere, not content */
+.sketch {
+  position: fixed;
+  color: var(--color-forest-ink);
+  opacity: 0.16;
+  pointer-events: none;
   z-index: 0;
 }
 
-.preview {
+.sketchTop { top: 6vh; right: 7vw; width: 150px; height: 150px; }
+.sketchBottom { bottom: 5vh; left: 6vw; width: 170px; height: 170px; }
+
+.shell {
   position: relative;
   z-index: 1;
-  width: 220px;
-  background: var(--paper);
-  color: var(--ink);
-  border-radius: 16px;
-  padding: 14px;
-  box-shadow: var(--warm-shadow);
-  transform: rotate(-5deg);
-  transition: transform 0.25s ease;
+  width: 100%;
+  max-width: 460px;
+  background: var(--color-cream-paper);
+  border: 1.5px solid var(--color-forest-ink);
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.brand:hover .preview {
-  transform: rotate(-3deg) translateY(-3px);
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.previewHead {
+.logo {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 28px;
 }
 
-.previewHead span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--stone);
-}
-
-.previewHead span:first-child { background: var(--coral); }
-
-.task {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 7px 0;
-}
-
-.task + .task { border-top: 1px solid var(--stone); }
-
-.box {
-  width: 16px;
-  height: 16px;
-  border-radius: 5px;
-  border: 1.5px solid var(--graphite);
+.logoMark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-highlighter-yellow);
+  color: var(--color-forest-ink);
   flex-shrink: 0;
 }
 
-.box.checked {
-  background: var(--mint);
-  border-color: var(--mint);
-  display: grid;
-  place-items: center;
-  color: var(--ink);
+.logoWord {
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  color: var(--color-forest-ink);
 }
 
-.done { color: var(--slate); text-decoration: line-through; }
-
-.annotation {
-  position: absolute;
-  right: 4px;
-  bottom: 34px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-annotation), cursive;
-  font-size: 17px;
-  color: var(--coral);
-  transform: rotate(-4deg);
-}
-
-/* ── Form column ───────────────────────────────────────────────── */
-.formCol {
-  padding: 44px 44px 36px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-@media (max-width: 760px) {
+@media (max-width: 520px) {
   .viewport { padding: 0; }
   .shell {
-    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 100%;
+    border: none;
     border-radius: 0;
-    min-height: 100vh;
-    max-width: 520px;
+    padding: 40px 24px;
   }
-  .brand { padding: 28px 28px 32px; }
-  .signature { display: none; }
-  .formCol { padding: 32px 28px 40px; }
+  .sketch { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .shell { animation: none; }
-  .preview, .brand:hover .preview { transition: none; transform: rotate(-5deg); }
 }
