@@ -83,7 +83,7 @@
   border-radius: var(--radius-md);
   font-size: 16px;
   font-family: inherit;
-  background: var(--color-cream-paper);
+  background: white;
   color: var(--color-forest-ink);
   transition: border-color 0.12s, box-shadow 0.12s;
 }
@@ -127,7 +127,7 @@
 
 .primary:hover:not(:disabled) { opacity: 0.9; }
 .primary:active:not(:disabled) { transform: translateY(1px); }
-.primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.primary:disabled { background-color: gray; cursor: not-allowed; }
 
 .arrow { font-size: 18px; line-height: 1; }
 
@@ -145,13 +145,11 @@
 }
 
 .panel {
-  border-radius: var(--radius-xl);
   overflow: hidden;
-  background: var(--color-whisper-gray);
   transition: background 0.18s ease;
 }
 
-.panel.open { background: #ffffff; }
+.panel.open { background:  #fffce5; }
 
 .panelHeader {
   width: 100%;

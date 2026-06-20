@@ -33,8 +33,8 @@
   z-index: 1;
   width: 100%;
   max-width: 460px;
-  background: var(--color-cream-paper);
-  border: 1.5px solid var(--color-forest-ink);
+  background-color: #fffce5;
+  border: 1px solid gray;
   border-radius: var(--radius-xl);
   padding: 40px;
   animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
