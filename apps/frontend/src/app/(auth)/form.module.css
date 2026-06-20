@@ -143,13 +143,13 @@
 }
 
 .panel {
-  border: 1.5px solid var(--color-pencil-gray);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  transition: border-color 0.18s ease;
+  background: var(--color-whisper-gray);
+  transition: background 0.18s ease;
 }
 
-.panel.open { border-color: var(--color-forest-ink); }
+.panel.open { background: var(--color-sticky-note-mint); }
 
 .panelHeader {
   width: 100%;
@@ -158,16 +158,13 @@
   justify-content: space-between;
   gap: 10px;
   padding: 14px 16px;
-  background: var(--color-cream-paper);
+  background: transparent;
   font-family: inherit;
   font-size: 15px;
   font-weight: 600;
   color: var(--color-forest-ink);
   cursor: pointer;
-  transition: background 0.18s ease;
 }
-
-.panel.open .panelHeader { background: var(--color-sticky-note-mint); }
 
 .panelHeaderLabel {
   display: inline-flex;

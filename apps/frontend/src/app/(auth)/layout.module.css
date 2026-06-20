@@ -34,9 +34,9 @@
   width: 100%;
   max-width: 460px;
   background: var(--color-cream-paper);
+  border: 1.5px solid var(--color-forest-ink);
   border-radius: var(--radius-xl);
   padding: 40px;
-  box-shadow: 0 10px 30px rgba(26, 51, 0, 0.08);
   animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -75,9 +75,9 @@
   .shell {
     width: 100%;
     max-width: 100%;
+    border: none;
     border-radius: 0;
     padding: 40px 24px;
-    box-shadow: none;
   }
 }
 
