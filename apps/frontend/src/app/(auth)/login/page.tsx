@@ -3,10 +3,9 @@
 import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
 import { api, ApiError } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
-import styles from './page.module.css';
+import styles from '../form.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -52,59 +51,57 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.card}>
-        <h1 className={styles.heading}>Sign in</h1>
-        {error && <div className={styles.error}>{error}</div>}
-        <form onSubmit={(e) => void handleSubmit(e)}>
-          <div className={styles.field}>
-            <label className={styles.label}>Email</label>
-            <input className={styles.input} type="email" value={email}
-              onChange={(e) => setEmail(e.target.value)} required autoFocus />
-          </div>
-          <div className={styles.field}>
-            <label className={styles.label}>Password</label>
-            <input className={styles.input} type="password" value={password}
-              onChange={(e) => setPassword(e.target.value)} required />
-          </div>
-          <div className={styles.footer}>
-            <Button type="submit" disabled={loading || !email || !password}>
-              {loading ? 'Signing in…' : 'Sign in'}
-            </Button>
-            <Link href="/register" className={styles.link}>
-              Don&apos;t have an account? Register
-            </Link>
-          </div>
-        </form>
-        {mattermostEnabled && (
-          <div className={styles.altAuth}>
-            <div className={styles.divider}><span>or</span></div>
-            {!showMattermost ? (
-              <Button type="button" variant="ghost" onClick={() => setShowMattermost(true)}>
-                Sign in with Mattermost
-              </Button>
-            ) : (
-              <form onSubmit={(e) => void handleMattermostSubmit(e)}>
-                <div className={styles.field}>
-                  <label className={styles.label}>Mattermost username or email</label>
-                  <input className={styles.input} type="text" value={mmLoginId}
-                    onChange={(e) => setMmLoginId(e.target.value)} required autoFocus />
-                </div>
-                <div className={styles.field}>
-                  <label className={styles.label}>Mattermost password</label>
-                  <input className={styles.input} type="password" value={mmPassword}
-                    onChange={(e) => setMmPassword(e.target.value)} required />
-                </div>
-                <div className={styles.footer}>
-                  <Button type="submit" disabled={loading || !mmLoginId || !mmPassword}>
-                    {loading ? 'Signing in…' : 'Sign in with Mattermost'}
-                  </Button>
-                </div>
-              </form>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+    <>
+      <p className={styles.eyebrow}>Welcome back</p>
+      <h2 className={styles.title}>Sign in</h2>
+      {error && <div className={styles.error}>{error}</div>}
+      <form onSubmit={(e) => void handleSubmit(e)}>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="email">Email</label>
+          <input className={styles.input} id="email" type="email" value={email}
+            onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required autoFocus />
+        </div>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="password">Password</label>
+          <input className={styles.input} id="password" type="password" value={password}
+            onChange={(e) => setPassword(e.target.value)} placeholder="Your password" required />
+        </div>
+        <button className={styles.primary} type="submit" disabled={loading || !email || !password}>
+          {loading ? 'Signing in…' : 'Sign in'}
+        </button>
+      </form>
+
+      {mattermostEnabled && (
+        <div className={styles.altAuth}>
+          <div className={styles.divider}>or</div>
+          {!showMattermost ? (
+            <button className={styles.ghost} type="button" onClick={() => setShowMattermost(true)}>
+              Sign in with Mattermost
+            </button>
+          ) : (
+            <form onSubmit={(e) => void handleMattermostSubmit(e)}>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="mm-login">Mattermost username or email</label>
+                <input className={styles.input} id="mm-login" type="text" value={mmLoginId}
+                  onChange={(e) => setMmLoginId(e.target.value)} required autoFocus />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="mm-password">Mattermost password</label>
+                <input className={styles.input} id="mm-password" type="password" value={mmPassword}
+                  onChange={(e) => setMmPassword(e.target.value)} required />
+              </div>
+              <button className={styles.primary} type="submit" disabled={loading || !mmLoginId || !mmPassword}>
+                {loading ? 'Signing in…' : 'Sign in with Mattermost'}
+              </button>
+            </form>
+          )}
+        </div>
+      )}
+
+      <p className={styles.switch}>
+        New to Kanbanchik?{' '}
+        <Link href="/register" className={styles.switchLink}>Create an account</Link>
+      </p>
+    </>
   );
 }
