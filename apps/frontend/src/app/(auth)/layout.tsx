@@ -10,18 +10,6 @@ const fontVars = `${inter.variable} ${display.variable} ${mono.variable}`;
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`${styles.viewport} ${fontVars}`}>
-      {/* atmospheric sketch marks */}
-      <svg className={`${styles.sketch} ${styles.sketchTop}`} viewBox="0 0 100 100" fill="none"
-        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-        <path d="M10 60 C 25 20, 50 20, 55 50 S 80 80, 90 40" />
-        <path d="M20 80 q 30 -12 60 -4" />
-      </svg>
-      <svg className={`${styles.sketch} ${styles.sketchBottom}`} viewBox="0 0 100 100" fill="none"
-        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-        <circle cx="50" cy="50" r="34" strokeDasharray="3 7" />
-        <path d="M30 50 l 12 12 l 26 -28" />
-      </svg>
-
       <div className={styles.shell}>
         <span className={styles.logo}>
           <span className={styles.logoMark} aria-hidden="true">
