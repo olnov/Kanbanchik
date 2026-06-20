@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from '../users/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { MattermostService } from './mattermost.service';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly mattermostService: MattermostService,
   ) {}
 
   async register(dto: RegisterDto): Promise<User> {
@@ -45,6 +47,31 @@ export class AuthService {
     if (!valid) throw new UnauthorizedException('Invalid credentials');
 
     return this.userRepo.findOneByOrFail({ id: userWithHash.id });
+  }
+
+  async loginWithMattermost(loginId: string, password: string): Promise<User> {
+    const profile = await this.mattermostService.authenticate(loginId, password);
+
+    const existingByMm = await this.userRepo.findOneBy({ mattermostUserId: profile.id });
+    if (existingByMm) return existingByMm;
+
+    const emailTaken = await this.userRepo.findOneBy({ email: profile.email });
+    if (emailTaken) {
+      throw new ConflictException('An account with this email already exists');
+    }
+
+    const saved = await this.userRepo.save(
+      this.userRepo.create({
+        name: (profile.firstName || profile.username).trim(),
+        lastName: profile.lastName.trim(),
+        email: profile.email,
+        role: '',
+        passwordHash: '',
+        authProvider: 'mattermost',
+        mattermostUserId: profile.id,
+      }),
+    );
+    return this.userRepo.findOneByOrFail({ id: saved.id });
   }
 
   signToken(userId: string): string {

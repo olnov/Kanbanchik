@@ -31,6 +31,14 @@ export class User {
   @Column({ default: 'available' })
   availability: string;
 
+  @ApiProperty()
+  @Column({ default: 'local' })
+  authProvider: string;
+
+  @ApiProperty({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
+  mattermostUserId: string | null;
+
   @Column({ select: false, default: '' })
   passwordHash: string;
 }

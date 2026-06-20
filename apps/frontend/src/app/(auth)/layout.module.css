@@ -1,0 +1,86 @@
+.viewport {
+  /* Say Briefly design tokens (docs/variables.css) — scoped to the auth route group */
+  --color-forest-ink: #1a3300;
+  --color-highlighter-yellow: #ffe95c;
+  --color-cream-paper: #fcfaf5;
+  --color-pencil-gray: #b6b6b6;
+  --color-whisper-gray: #f1f1f1;
+  --color-sticky-note-teal: #a8e5e5;
+  --color-sticky-note-mint: #d5f5c2;
+  --color-sticky-note-blush: #f6d0ff;
+  --color-terracotta: #cb5521;
+
+  --radius-md: 6px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+  --shadow-subtle: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
+
+  position: relative;
+  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: transparent;
+  color: var(--color-forest-ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 460px;
+  background-color: #fffce5;
+  border: 1px solid gray;
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.logoMark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-highlighter-yellow);
+  color: var(--color-forest-ink);
+  flex-shrink: 0;
+}
+
+.logoWord {
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  color: var(--color-forest-ink);
+}
+
+@media (max-width: 520px) {
+  .viewport { padding: 0; }
+  .shell {
+    width: 100%;
+    max-width: 100%;
+    border: none;
+    border-radius: 0;
+    padding: 40px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell { animation: none; }
+}
