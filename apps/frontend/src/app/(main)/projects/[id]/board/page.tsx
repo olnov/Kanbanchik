@@ -1,12 +1,16 @@
 'use client';
 
 import { use, useCallback, useEffect, useState } from 'react';
-import { Settings } from 'lucide-react';
+import { Settings, ListFilter } from 'lucide-react';
 import { Board } from '@/components/board/Board';
 import { CardModal } from '@/components/board/CardModal';
 import { AiImportModal } from '@/components/board/AiImportModal';
 import { ProjectSettingsModal } from '@/components/board/ProjectSettingsModal';
+import { FilterPanel } from '@/components/board/FilterPanel';
 import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/contexts/AuthContext';
+import { filterCards, isFilterActive, EMPTY_FILTER } from '@/lib/filterCards';
+import type { BoardFilter } from '@/lib/filterCards';
 import { api } from '@/lib/api';
 import type { BoardData, Card, User } from '@/lib/types';
 import styles from './page.module.css';
@@ -20,6 +24,10 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
   const [showAiImport, setShowAiImport] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { currentUser } = useAuth();
+  const [filter, setFilter] = useState<BoardFilter>(EMPTY_FILTER);
+  const [showFilter, setShowFilter] = useState(false);
 
   const loadBoard = useCallback(async () => {
     try {
@@ -42,16 +50,42 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
   if (error) return <div className={styles.status}>{error}</div>;
   if (!data) return <div className={styles.status}>Loading...</div>;
 
+  const filteredData: BoardData = {
+    ...data,
+    cards: filterCards(data.cards, filter, currentUser?.id),
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.heading}>{data.project.name}</h1>
         <div className={styles.actions}>
+          <span className={styles.filterWrap}>
+            <button
+              type="button"
+              onClick={() => setShowFilter((v) => !v)}
+              title="Filter cards"
+              aria-expanded={showFilter}
+              className={styles.iconButton}
+            >
+              <ListFilter size={18} />
+              {isFilterActive(filter) && <span className={styles.filterDot} aria-hidden="true" />}
+            </button>
+            {showFilter && (
+              <FilterPanel
+                filter={filter}
+                onChange={setFilter}
+                users={users}
+                currentUserId={currentUser?.id}
+                onClose={() => setShowFilter(false)}
+              />
+            )}
+          </span>
           <button
             type="button"
             onClick={() => setShowSettings(true)}
             title="Project settings"
-            style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', borderRadius: 6, color: 'var(--color-text-secondary)' }}
+            className={styles.iconButton}
           >
             <Settings size={18} />
           </button>
@@ -64,7 +98,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
       </div>
 
       <Board
-        data={data}
+        data={filteredData}
         users={users}
         onCardClick={setSelectedCard}
         onAddCard={setAddToStage}
