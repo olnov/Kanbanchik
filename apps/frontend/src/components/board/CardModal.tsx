@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
+import { RichTextEditor } from '@/components/ui/RichTextEditor';
+import { htmlToStored } from '@/lib/richText';
 import type { Card, User, ProjectPermissionLevel } from '@/lib/types';
 import styles from './CardModal.module.css';
 
@@ -35,7 +37,7 @@ export function CardModal({ card, stageId, projectId, users, myPermission = 'adm
       ...(card ?? {}),
       id: card?.id,
       summary,
-      description: description || null,
+      description: htmlToStored(description),
       type,
       priority,
       assigneeId: assigneeId || null,
@@ -63,12 +65,11 @@ export function CardModal({ card, stageId, projectId, users, myPermission = 'adm
 
         <div className={styles.field}>
           <label className={styles.label}>Description</label>
-          <textarea
-            className={styles.textarea}
+          <RichTextEditor
             value={description ?? ''}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={setDescription}
+            editable={!isViewer}
             placeholder="Add more details…"
-            readOnly={isViewer}
           />
         </div>
 

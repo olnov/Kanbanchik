@@ -1,0 +1,65 @@
+.wrapper {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.wrapper:focus-within { border-color: var(--color-indigo); }
+
+.toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.toolBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+}
+.toolBtn:hover { background: var(--color-surface); color: var(--color-text-primary); }
+.toolBtn.active { background: var(--color-indigo); color: #fff; }
+
+.content {
+  min-height: 120px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+/* Editing: scroll within the editor instead of growing the modal. */
+.editorScroll {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.readonly .content {
+  min-height: 0;
+  padding: 0;
+}
+
+.content p { margin: 0 0 8px; }
+.content p:last-child { margin-bottom: 0; }
+.content ul, .content ol { margin: 0 0 8px; padding-left: 20px; }
+.content li { margin: 2px 0; }
+.content a { color: var(--color-indigo); text-decoration: underline; }
+.content strong { font-weight: 700; }
+.content em { font-style: italic; }
+
+/* Placeholder (Tiptap adds is-editor-empty to the first empty node) */
+.content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-muted);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
