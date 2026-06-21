@@ -98,7 +98,7 @@ export function CardModal({ card, stageId, projectId, users, myPermission = 'adm
             <select className={styles.select} value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)} disabled={isViewer}>
               <option value="">Unassigned</option>
               {users.map((u) => (
-                <option key={u.id} value={u.id}>{u.name}</option>
+                <option key={u.id} value={u.id}>{u.name} {u.lastName} ({u.email})</option>
               ))}
             </select>
           </div>

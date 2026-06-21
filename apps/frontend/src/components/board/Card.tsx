@@ -34,7 +34,7 @@ export function Card({ card, index, assignee, onClick }: CardProps) {
               <Badge value={card.type} variant="type" />
             </div>
             {assignee && (
-              <div className={styles.assignee} title={assignee.name}>
+              <div className={styles.assignee} title={`${assignee.name} ${assignee.lastName} (${assignee.email})`}>
                 {assignee.name.slice(0, 2).toUpperCase()}
               </div>
             )}
