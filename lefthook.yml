@@ -1,0 +1,45 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://lefthook.dev/configuration/
+#
+# pre-push:
+#   jobs:
+#     - name: packages audit
+#       tags:
+#         - frontend
+#         - security
+#       run: yarn audit
+#
+#     - name: gems audit
+#       tags:
+#         - backend
+#         - security
+#       run: bundle audit
+#
+pre-commit:
+  parallel: true
+  commands:
+    backend-typecheck:
+      glob: 'apps/backend/**/*.ts' # only runs when backend .ts files are staged
+      run: pnpm --filter backend exec tsc -p tsconfig.json --noEmit
+    frontend-typecheck:
+      glob: 'apps/frontend/**/*.{ts,tsx}' # only runs when frontend files are staged
+      run: pnpm --filter frontend exec tsc --noEmit
+    format:
+      glob: '*.{ts,tsx,js,jsx,json,css,md,yml,yaml}'
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true # re-stage files Prettier reformatted
+    secret-scan:
+      # Scans staged changes for secrets. Skips gracefully if gitleaks is not installed.
+      run: "command -v gitleaks >/dev/null 2>&1 && gitleaks git --staged --no-banner || echo 'gitleaks not installed - skipping secret scan (install: https://github.com/gitleaks/gitleaks)'"
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}
+
+pre-push:
+  commands:
+    tests:
+      run: pnpm -r test
