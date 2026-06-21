@@ -5,6 +5,7 @@ import { useEditor, EditorContent, type Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
+import { Bold, Italic, List, ListOrdered, Link2 } from 'lucide-react';
 import styles from './RichTextEditor.module.css';
 
 interface RichTextEditorProps {
@@ -30,15 +31,15 @@ function Toolbar({ editor }: { editor: Editor }) {
   return (
     <div className={styles.toolbar}>
       <button type="button" className={cls(editor.isActive('bold'))} aria-label="Bold" title="Bold"
-        onClick={() => editor.chain().focus().toggleBold().run()}><strong>B</strong></button>
+        onClick={() => editor.chain().focus().toggleBold().run()}><Bold size={16} /></button>
       <button type="button" className={cls(editor.isActive('italic'))} aria-label="Italic" title="Italic"
-        onClick={() => editor.chain().focus().toggleItalic().run()}><em>I</em></button>
+        onClick={() => editor.chain().focus().toggleItalic().run()}><Italic size={16} /></button>
       <button type="button" className={cls(editor.isActive('bulletList'))} aria-label="Bullet list" title="Bullet list"
-        onClick={() => editor.chain().focus().toggleBulletList().run()}>• List</button>
+        onClick={() => editor.chain().focus().toggleBulletList().run()}><List size={16} /></button>
       <button type="button" className={cls(editor.isActive('orderedList'))} aria-label="Numbered list" title="Numbered list"
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}>1. List</button>
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}><ListOrdered size={16} /></button>
       <button type="button" className={cls(editor.isActive('link'))} aria-label="Link" title="Link"
-        onClick={setLink}>Link</button>
+        onClick={setLink}><Link2 size={16} /></button>
     </div>
   );
 }
