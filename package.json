@@ -12,12 +12,6 @@
     "build": "pnpm -r build"
   },
   "packageManager": "pnpm@10.29.3",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "electron",
-      "bcrypt"
-    ]
-  },
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",

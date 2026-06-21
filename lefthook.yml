@@ -17,6 +17,12 @@
 #         - security
 #       run: bundle audit
 #
+colors: false # avoid truecolor escapes that garble some terminals
+
+output:
+  - summary # show the per-hook timing summary
+  - failure # show output only for commands that fail
+
 pre-commit:
   parallel: true
   commands:
