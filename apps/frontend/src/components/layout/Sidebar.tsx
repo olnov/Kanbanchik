@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { LogOut, X } from 'lucide-react';
 import { api } from '@/lib/api';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { PROJECTS_UPDATED_EVENT } from '@/lib/project-events';
 import type { Project } from '@/lib/types';
@@ -31,11 +32,19 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   useEffect(() => {
     let active = true;
     const loadProjects = () => {
-      api.getProjects().then((p) => { if (active) setProjects(p); }).catch(() => {});
+      api
+        .getProjects()
+        .then((p) => {
+          if (active) setProjects(p);
+        })
+        .catch(() => {});
     };
     loadProjects();
     window.addEventListener(PROJECTS_UPDATED_EVENT, loadProjects);
-    return () => { active = false; window.removeEventListener(PROJECTS_UPDATED_EVENT, loadProjects); };
+    return () => {
+      active = false;
+      window.removeEventListener(PROJECTS_UPDATED_EVENT, loadProjects);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -49,7 +58,13 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <nav className={styles.sidebar}>
         <div className={styles.topRow}>
           <Link href="/projects" className={styles.logoLink} aria-label="Kanbanchik home">
-            <Image src="/boar.svg" alt="Kanbanchik" width={60} height={60} className={styles.logo} />
+            <Image
+              src="/boar.svg"
+              alt="Kanbanchik"
+              width={60}
+              height={60}
+              className={styles.logo}
+            />
           </Link>
           <button type="button" className={styles.toggleButton} onClick={onToggle}>
             <X size={20} />
@@ -89,11 +104,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               </div>
             </div>
           )}
-          <button
-            type="button"
-            className={styles.logoutButton}
-            onClick={() => void handleLogout()}
-          >
+          {/* <ThemeToggle /> */}
+          <button type="button" className={styles.logoutButton} onClick={() => void handleLogout()}>
             <LogOut size={16} />
             Logout
           </button>

@@ -15,15 +15,64 @@
   --color-bg: #f0f4ff;
   --color-surface: #ffffff;
 
+  /* Semantic, theme-adaptive surfaces (replace hardcoded whites in components) */
+  --surface-panel: rgba(255, 255, 255, 0.84); /* sidebar */
+  --surface-bar: rgba(255, 255, 255, 0.22); /* board top bar */
+  --surface-overlay: rgba(255, 255, 255, 0.96); /* menus, popovers, small buttons */
+  --surface-hover: rgba(0, 0, 0, 0.05); /* hover overlay */
+  --surface-input: rgba(255, 255, 255, 0.78); /* inline inputs on glass */
+  --surface-chip: rgba(0, 0, 0, 0.06); /* count chip */
+  --border-soft: rgba(44, 42, 42, 0.12); /* soft borders */
+  --nav-active-bg: rgba(238, 242, 255, 0.9); /* active nav item */
+
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
+
+  --bg-image: url('/background.jpg');
 
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.16);
 }
 
-*, *::before, *::after {
+:root[data-theme='dark'] {
+  --color-indigo: #818cf8;
+  --color-indigo-bg: rgba(129, 140, 248, 0.14);
+  --color-amber: #fbbf24;
+  --color-amber-bg: rgba(251, 191, 36, 0.14);
+  --color-green: #4ade80;
+  --color-green-bg: rgba(74, 222, 128, 0.14);
+  --color-purple: #c084fc;
+  --color-purple-bg: rgba(192, 132, 252, 0.14);
+
+  --color-text-primary: #e6e8ee;
+  --color-text-secondary: #9aa3b2;
+  --color-text-muted: #6b7280;
+  --color-border: #2a2f3a;
+  --color-bg: #0e1117;
+  --color-surface: #171b24;
+
+  --surface-panel: #12161e;
+  --surface-bar: rgba(0, 0, 0, 0.35);
+  --surface-overlay: #1c212c;
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --surface-input: #1c212c;
+  --surface-chip: rgba(255, 255, 255, 0.1);
+  --surface-column: #12161e;
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --nav-active-bg: rgba(129, 140, 248, 0.16);
+
+  --bg-image: url('/background-dark.jpg');
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-modal: 0 12px 40px rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -50,7 +99,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url('/background.jpg');
+  background-image: var(--bg-image);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -71,5 +120,13 @@ body > * {
   z-index: 1;
 }
 
-a { color: inherit; text-decoration: none; }
-button { cursor: pointer; border: none; background: none; font: inherit; }
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+}

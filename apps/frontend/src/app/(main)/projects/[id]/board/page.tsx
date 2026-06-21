@@ -1,7 +1,7 @@
 'use client';
 
 import { use, useCallback, useEffect, useState } from 'react';
-import { Settings, ListFilter } from 'lucide-react';
+import { Settings, ListFilter, Import } from 'lucide-react';
 import { Board } from '@/components/board/Board';
 import { CardModal } from '@/components/board/CardModal';
 import { AiImportModal } from '@/components/board/AiImportModal';
@@ -14,6 +14,7 @@ import type { BoardFilter } from '@/lib/filterCards';
 import { api } from '@/lib/api';
 import type { BoardData, Card, User } from '@/lib/types';
 import styles from './page.module.css';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function BoardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -90,10 +91,16 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
             <Settings size={18} />
           </button>
           {data.myPermission !== 'viewer' && (
-            <Button variant="ghost" onClick={() => setShowAiImport(true)}>
-              Import from spec
-            </Button>
+            <button
+              type="button"
+              className={styles.iconButton}
+              title="Import from spec"
+              onClick={() => setShowAiImport(true)}
+            >
+              <Import />
+            </button>
           )}
+          <ThemeToggle />
         </div>
       </div>
 
