@@ -36,7 +36,7 @@
 }
 
 /* Editing: scroll within the editor instead of growing the modal. */
-.wrapper .content {
+.editorScroll {
   max-height: 300px;
   overflow-y: auto;
 }

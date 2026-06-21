@@ -86,10 +86,20 @@ export function RichTextEditor({ value, onChange, editable = true, placeholder }
 
   if (!editor) return null;
 
+  if (!editable) {
+    return (
+      <div className={styles.readonly}>
+        <EditorContent editor={editor} />
+      </div>
+    );
+  }
+
   return (
-    <div className={editable ? styles.wrapper : styles.readonly}>
-      {editable && <Toolbar editor={editor} />}
-      <EditorContent editor={editor} />
+    <div className={styles.wrapper}>
+      <Toolbar editor={editor} />
+      <div className={styles.editorScroll}>
+        <EditorContent editor={editor} />
+      </div>
     </div>
   );
 }
