@@ -1,3 +1,11 @@
+[![License](https://img.shields.io/github/license/olnov/Kanbanchik)](./LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/olnov/Kanbanchik)](https://github.com/olnov/Kanbanchik/releases)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/olnov/Kanbanchik/pulls)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js&logoColor=white)](https://nextjs.org)
+[![NestJS](https://img.shields.io/badge/NestJS-11-e0234e?logo=nestjs&logoColor=white)](https://nestjs.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-f69220?logo=pnpm&logoColor=white)](https://pnpm.io)
+
 # Kanbanchik
 
 Kanbanchik is a small kanban workspace built as a pnpm monorepo. It includes a Next.js frontend, a NestJS backend, PostgreSQL persistence, drag-and-drop boards, AI-assisted import of tasks from project specifications, and an Electron shell for packaging the app as a desktop client.
@@ -131,6 +139,7 @@ For the most predictable results, use explicit markdown task sections:
 
 ```md
 ## Task: Implement User Authentication
+
 **Priority:** High
 
 **Description:**
