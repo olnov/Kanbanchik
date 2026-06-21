@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "node scripts/enforce-package-manager.cjs",
+    "prepare": "lefthook install",
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "dev:electron": "pnpm --filter electron dev",
@@ -12,12 +13,19 @@
   },
   "packageManager": "pnpm@10.29.3",
   "pnpm": {
-    "onlyBuiltDependencies": ["electron", "bcrypt"]
+    "onlyBuiltDependencies": [
+      "electron",
+      "bcrypt"
+    ]
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.57.0",
+    "lefthook": "^2.1.9",
+    "prettier": "^3.8.4",
     "typescript": "^5.4.0"
   }
 }
