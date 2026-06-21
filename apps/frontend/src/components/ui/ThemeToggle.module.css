@@ -1,0 +1,13 @@
+.toggle {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+
+.toggle:hover {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}

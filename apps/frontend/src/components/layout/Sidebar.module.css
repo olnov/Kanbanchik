@@ -1,7 +1,9 @@
 .shell {
   width: 220px;
   min-width: 220px;
-  transition: width 0.22s ease, min-width 0.22s ease;
+  transition:
+    width 0.22s ease,
+    min-width 0.22s ease;
   overflow: hidden;
 }
 
@@ -12,8 +14,8 @@
 
 .sidebar {
   width: 220px;
-  background: rgba(255, 255, 255, 0.84);
-  border-right: 1px solid #2c2a2a1f;
+  background: var(--surface-panel);
+  border-right: 1px solid var(--border-soft);
   backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
@@ -53,8 +55,6 @@
   border-radius: 999px;
   font-size: 12px;
   color: var(--color-text-secondary);
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 .section {
@@ -79,11 +79,11 @@
 }
 
 .navItem:hover {
-  background: rgba(255, 255, 255, 0.48);
+  background: var(--surface-hover);
 }
 
 .navItem.active {
-  background: rgba(238, 242, 255, 0.9);
+  background: var(--nav-active-bg);
   color: var(--color-indigo);
   font-weight: 600;
 }
@@ -100,7 +100,7 @@
 }
 
 .userSection {
-  border-top: 1px solid rgba(255, 255, 255, 0.7);
+  border-top: 1px solid var(--border-soft);
   padding-top: 12px;
   margin-top: 8px;
 }
@@ -160,13 +160,15 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text-primary);
-  background: rgba(255, 255, 255, 0.86);
+  background: var(--surface-overlay);
   cursor: pointer;
-  transition: background 0.1s, border-color 0.1s;
+  transition:
+    background 0.1s,
+    border-color 0.1s;
 }
 
 .logoutButton:hover {
-  background: #ffffff;
+  background: var(--color-surface);
   border-color: var(--color-text-muted);
 }
 
@@ -181,8 +183,8 @@
   margin-top: 12px;
   padding: 8px 12px;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--surface-overlay);
+  border: 1px solid var(--border-soft);
   color: var(--color-text-secondary);
   font-size: 13px;
 }
