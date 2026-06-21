@@ -35,6 +35,12 @@
   outline: none;
 }
 
+/* Editing: scroll within the editor instead of growing the modal. */
+.wrapper .content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 .readonly .content {
   min-height: 0;
   padding: 0;
