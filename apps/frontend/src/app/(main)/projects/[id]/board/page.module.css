@@ -7,57 +7,9 @@
   min-height: 0;
   min-width: 0;
   overflow: hidden;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  margin-bottom: 20px;
-  padding: 18px 20px;
-  background: var(--surface-bar);
-  backdrop-filter: blur(10px);
-}
-
-.heading {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.filterWrap {
-  position: relative;
-  display: inline-flex;
-}
-
-.iconButton {
-  display: flex;
-  align-items: center;
-  position: relative;
-  padding: 6px 8px;
-  border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
-}
-.iconButton:hover {
-  background: var(--color-bg);
-  color: var(--color-text-primary);
-}
-
-.filterDot {
-  position: absolute;
-  top: 3px;
-  right: 4px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-indigo);
+  /* Break out of the AppShell's 10px padding so the topbar sits flush to the
+     top and sides; the board content below restores its own inset. */
+  margin: -10px -10px 0 -10px;
 }
 
 .status {

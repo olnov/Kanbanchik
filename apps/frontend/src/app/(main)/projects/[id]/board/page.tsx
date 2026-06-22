@@ -1,20 +1,17 @@
 'use client';
 
 import { use, useCallback, useEffect, useState } from 'react';
-import { Settings, ListFilter, Import } from 'lucide-react';
 import { Board } from '@/components/board/Board';
 import { CardModal } from '@/components/board/CardModal';
 import { AiImportModal } from '@/components/board/AiImportModal';
 import { ProjectSettingsModal } from '@/components/board/ProjectSettingsModal';
-import { FilterPanel } from '@/components/board/FilterPanel';
-import { Button } from '@/components/ui/Button';
+import { BoardTopbar } from '@/components/board/BoardTopbar';
 import { useAuth } from '@/contexts/AuthContext';
-import { filterCards, isFilterActive, EMPTY_FILTER } from '@/lib/filterCards';
+import { filterCards, EMPTY_FILTER } from '@/lib/filterCards';
 import type { BoardFilter } from '@/lib/filterCards';
 import { api } from '@/lib/api';
 import type { BoardData, Card, User } from '@/lib/types';
 import styles from './page.module.css';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function BoardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -28,7 +25,6 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
 
   const { currentUser } = useAuth();
   const [filter, setFilter] = useState<BoardFilter>(EMPTY_FILTER);
-  const [showFilter, setShowFilter] = useState(false);
 
   const loadBoard = useCallback(async () => {
     try {
@@ -58,51 +54,16 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.heading}>{data.project.name}</h1>
-        <div className={styles.actions}>
-          <span className={styles.filterWrap}>
-            <button
-              type="button"
-              onClick={() => setShowFilter((v) => !v)}
-              title="Filter cards"
-              aria-expanded={showFilter}
-              className={styles.iconButton}
-            >
-              <ListFilter size={18} />
-              {isFilterActive(filter) && <span className={styles.filterDot} aria-hidden="true" />}
-            </button>
-            {showFilter && (
-              <FilterPanel
-                filter={filter}
-                onChange={setFilter}
-                users={users}
-                currentUserId={currentUser?.id}
-                onClose={() => setShowFilter(false)}
-              />
-            )}
-          </span>
-          <button
-            type="button"
-            onClick={() => setShowSettings(true)}
-            title="Project settings"
-            className={styles.iconButton}
-          >
-            <Settings size={18} />
-          </button>
-          {data.myPermission !== 'viewer' && (
-            <button
-              type="button"
-              className={styles.iconButton}
-              title="Import from spec"
-              onClick={() => setShowAiImport(true)}
-            >
-              <Import />
-            </button>
-          )}
-          <ThemeToggle />
-        </div>
-      </div>
+      <BoardTopbar
+        projectName={data.project.name}
+        filter={filter}
+        onFilterChange={setFilter}
+        users={users}
+        currentUserId={currentUser?.id}
+        canImport={data.myPermission !== 'viewer'}
+        onOpenSettings={() => setShowSettings(true)}
+        onOpenImport={() => setShowAiImport(true)}
+      />
 
       <Board
         data={filteredData}
