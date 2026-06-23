@@ -6,13 +6,12 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import fastifyCookie from '@fastify/cookie';
 import { AppModule } from './app.module';
+import { getCorsConfig } from './cors.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-    { bufferLogs: true },
-  );
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
+    bufferLogs: true,
+  });
 
   app.useLogger(app.get(Logger));
   await app.register(fastifyCookie as unknown as Parameters<typeof app.register>[0]);
@@ -21,12 +20,7 @@ async function bootstrap() {
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  app.enableCors({
-    origin: ['http://localhost:3000', 'app://-'],
-    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true,
-  });
+  app.enableCors(getCorsConfig());
 
   const config = new DocumentBuilder()
     .setTitle('Kanbanchik API')
