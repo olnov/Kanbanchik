@@ -1,6 +1,9 @@
 import {
-  Injectable, CanActivate, ExecutionContext,
-  ForbiddenException, NotFoundException,
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -83,7 +86,7 @@ export class ProjectPermissionGuard implements CanActivate {
     if (source === 'stage-param') {
       const stage = await this.stageRepo.findOne({
         where: { id: request.params.id },
-        select: ['projectId'],
+        select: { projectId: true },
       });
       return stage?.projectId ?? null;
     }
@@ -91,7 +94,7 @@ export class ProjectPermissionGuard implements CanActivate {
     if (source === 'card-param') {
       const card = await this.cardRepo.findOne({
         where: { id: request.params.id },
-        select: ['projectId'],
+        select: { projectId: true },
       });
       return card?.projectId ?? null;
     }
