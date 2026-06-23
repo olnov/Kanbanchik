@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "node scripts/enforce-package-manager.cjs",
-    "prepare": "lefthook install",
+    "prepare": "lefthook install || true",
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "dev:electron": "pnpm --filter electron dev",

@@ -1,4 +1,4 @@
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@10.29.3 --activate
@@ -7,6 +7,7 @@ RUN corepack enable && corepack prepare pnpm@10.29.3 --activate
 FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY scripts/ ./scripts/
 COPY apps/frontend/package.json ./apps/frontend/
 RUN pnpm install --frozen-lockfile --filter=frontend...
 
@@ -21,7 +22,7 @@ COPY apps/frontend ./apps/frontend
 RUN pnpm --filter frontend build
 
 # ---- Minimal production image ----
-FROM node:22-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
