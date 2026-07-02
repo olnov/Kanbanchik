@@ -8,7 +8,15 @@ import { LoginMattermostDto } from './dto/login-mattermost.dto';
 import { Public } from '../../common/decorators/public.decorator';
 import { User } from '../users/user.entity';
 
-const COOKIE_OPTIONS = { httpOnly: true, sameSite: 'strict' as const, path: '/' };
+function getCookieOptions() {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true,
+    sameSite: isProduction ? ('none' as const) : ('strict' as const),
+    secure: isProduction,
+    path: '/',
+  };
+}
 
 @ApiTags('auth')
 @Controller('auth')
@@ -19,7 +27,7 @@ export class AuthController {
   @Public()
   async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) reply: FastifyReply) {
     const user = await this.authService.register(dto);
-    reply.setCookie('access_token', this.authService.signToken(user.id), COOKIE_OPTIONS);
+    reply.setCookie('access_token', this.authService.signToken(user.id), getCookieOptions());
     return user;
   }
 
@@ -27,7 +35,7 @@ export class AuthController {
   @Public()
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) reply: FastifyReply) {
     const user = await this.authService.login(dto);
-    reply.setCookie('access_token', this.authService.signToken(user.id), COOKIE_OPTIONS);
+    reply.setCookie('access_token', this.authService.signToken(user.id), getCookieOptions());
     return user;
   }
 
@@ -38,7 +46,7 @@ export class AuthController {
     @Res({ passthrough: true }) reply: FastifyReply,
   ) {
     const user = await this.authService.loginWithMattermost(dto.loginId, dto.password);
-    reply.setCookie('access_token', this.authService.signToken(user.id), COOKIE_OPTIONS);
+    reply.setCookie('access_token', this.authService.signToken(user.id), getCookieOptions());
     return user;
   }
 
