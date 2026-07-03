@@ -202,4 +202,35 @@ export class ProjectsService {
   async revokeInvite(projectId: string, inviteId: string): Promise<void> {
     await this.inviteRepo.delete({ id: inviteId, projectId });
   }
+
+  getShareLink(projectId: string): Promise<ProjectShareLink | null> {
+    return this.shareLinkRepo.findOne({ where: { projectId } });
+  }
+
+  async saveShareLink(
+    projectId: string,
+    dto: SaveShareLinkDto,
+    createdById: string,
+    regenerate: boolean,
+  ): Promise<ProjectShareLink> {
+    await this.projectRepo.findOneByOrFail({ id: projectId });
+    const existing = await this.shareLinkRepo.findOne({ where: { projectId } });
+
+    if (!existing) {
+      return this.shareLinkRepo.save(
+        this.shareLinkRepo.create({
+          projectId,
+          token: generateToken(),
+          role: dto.role,
+          enabled: dto.enabled,
+          createdById,
+        }),
+      );
+    }
+
+    existing.role = dto.role;
+    existing.enabled = dto.enabled;
+    if (regenerate) existing.token = generateToken();
+    return this.shareLinkRepo.save(existing);
+  }
 }

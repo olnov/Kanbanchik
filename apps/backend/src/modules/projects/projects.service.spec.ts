@@ -209,4 +209,61 @@ describe('ProjectsService', () => {
       ).rejects.toThrow('already a member');
     });
   });
+
+  describe('saveShareLink', () => {
+    it('creates a new link when none exists', async () => {
+      mockShareLinkRepo.findOne.mockResolvedValue(null);
+      const link = await service.saveShareLink(
+        'proj-1',
+        { role: ProjectPermissionLevel.VIEWER, enabled: true },
+        'user-1',
+        false,
+      );
+      expect(mockShareLinkRepo.create).toHaveBeenCalled();
+      const created = mockShareLinkRepo.create.mock.calls[0][0];
+      expect(created.token).toEqual(expect.any(String));
+      expect(created.projectId).toBe('proj-1');
+      expect(link.id).toBe('link-1');
+    });
+
+    it('updates role/enabled but keeps the token when not regenerating', async () => {
+      mockShareLinkRepo.findOne.mockResolvedValue({
+        id: 'link-1',
+        projectId: 'proj-1',
+        token: 'keep-me',
+        role: ProjectPermissionLevel.VIEWER,
+        enabled: true,
+        createdById: 'user-1',
+      });
+      await service.saveShareLink(
+        'proj-1',
+        { role: ProjectPermissionLevel.ADMIN, enabled: false },
+        'user-1',
+        false,
+      );
+      const saved = mockShareLinkRepo.save.mock.calls[0][0];
+      expect(saved.token).toBe('keep-me');
+      expect(saved.role).toBe(ProjectPermissionLevel.ADMIN);
+      expect(saved.enabled).toBe(false);
+    });
+
+    it('rotates the token when regenerate is true', async () => {
+      mockShareLinkRepo.findOne.mockResolvedValue({
+        id: 'link-1',
+        projectId: 'proj-1',
+        token: 'old-token',
+        role: ProjectPermissionLevel.VIEWER,
+        enabled: true,
+        createdById: 'user-1',
+      });
+      await service.saveShareLink(
+        'proj-1',
+        { role: ProjectPermissionLevel.VIEWER, enabled: true },
+        'user-1',
+        true,
+      );
+      const saved = mockShareLinkRepo.save.mock.calls[0][0];
+      expect(saved.token).not.toBe('old-token');
+    });
+  });
 });
