@@ -9,6 +9,7 @@ import { StagesModule } from './modules/stages/stages.module';
 import { CardsModule } from './modules/cards/cards.module';
 import { AiModule } from './modules/ai/ai.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { JoinModule } from './modules/join/join.module';
 import { UserGuard } from './common/guards/user.guard';
 import { DevBootstrapService } from './database/dev-bootstrap.service';
 
@@ -37,10 +38,8 @@ import { DevBootstrapService } from './database/dev-bootstrap.service';
     StagesModule,
     CardsModule,
     AiModule,
+    JoinModule,
   ],
-  providers: [
-    DevBootstrapService,
-    { provide: APP_GUARD, useClass: UserGuard },
-  ],
+  providers: [DevBootstrapService, { provide: APP_GUARD, useClass: UserGuard }],
 })
 export class AppModule {}

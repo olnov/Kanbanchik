@@ -6,7 +6,7 @@ import { ProjectMember, ProjectPermissionLevel } from '../projects/project-membe
 import { ProjectInvite } from '../projects/project-invite.entity';
 import { ProjectShareLink } from '../projects/project-share-link.entity';
 
-interface JoinPreview {
+export interface JoinPreview {
   projectName: string;
   kind: 'invite' | 'link';
   invitedEmail?: string;
