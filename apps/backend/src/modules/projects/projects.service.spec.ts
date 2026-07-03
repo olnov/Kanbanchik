@@ -210,6 +210,26 @@ describe('ProjectsService', () => {
     });
   });
 
+  describe('getMembers', () => {
+    it('includes pending invites alongside members', async () => {
+      mockMemberRepoForInvite.find.mockResolvedValue([]);
+      mockInviteRepo.find.mockResolvedValue([
+        {
+          id: 'invite-1',
+          projectId: 'proj-1',
+          email: 'pending@example.com',
+          role: ProjectPermissionLevel.VIEWER,
+          token: 't',
+          invitedById: 'user-1',
+        },
+      ]);
+      const result = await service.getMembers('proj-1', 'user-1');
+      expect(result.invites).toHaveLength(1);
+      expect(result.invites[0].email).toBe('pending@example.com');
+      expect(result.myPermission).toBe(ProjectPermissionLevel.ADMIN);
+    });
+  });
+
   describe('saveShareLink', () => {
     it('creates a new link when none exists', async () => {
       mockShareLinkRepo.findOne.mockResolvedValue(null);

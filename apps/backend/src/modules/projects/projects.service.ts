@@ -91,11 +91,12 @@ export class ProjectsService {
   }
 
   async getMembers(projectId: string, currentUserId: string) {
-    const [members, myPermission] = await Promise.all([
+    const [members, invites, myPermission] = await Promise.all([
       this.memberRepo.find({ where: { projectId } }),
+      this.inviteRepo.find({ where: { projectId }, order: { createdAt: 'ASC' } }),
       this.permissionService.getUserProjectPermission(currentUserId, projectId),
     ]);
-    return { members, myPermission };
+    return { members, invites, myPermission };
   }
 
   async getAssignableUsers(projectId: string): Promise<User[]> {
