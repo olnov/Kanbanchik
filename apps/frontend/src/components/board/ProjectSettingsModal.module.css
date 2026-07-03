@@ -145,6 +145,17 @@
   margin-top: 12px;
 }
 
+.inviteLink {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--color-indigo);
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+}
+.inviteLink:hover {
+  background: var(--color-indigo-bg);
+}
+
 .shareSection {
   margin-top: 1.5rem;
   padding-top: 1rem;

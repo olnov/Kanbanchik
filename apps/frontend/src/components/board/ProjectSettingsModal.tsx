@@ -57,6 +57,7 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
   const [inviteRole, setInviteRole] = useState<ProjectPermissionLevel>('viewer');
   const [shareLink, setShareLink] = useState<ShareLink | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedInviteId, setCopiedInviteId] = useState<string | null>(null);
   const [myPermission, setMyPermission] = useState<ProjectPermissionLevel | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [projectName, setProjectName] = useState('');
@@ -175,6 +176,12 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
     await navigator.clipboard.writeText(joinUrl(shareLink.token));
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1500);
+  };
+
+  const copyInviteLink = async (invite: ProjectInvite) => {
+    await navigator.clipboard.writeText(joinUrl(invite.token));
+    setCopiedInviteId(invite.id);
+    window.setTimeout(() => setCopiedInviteId(null), 1500);
   };
 
   const handleRoleChange = async (userId: string, role: ProjectPermissionLevel) => {
@@ -351,9 +358,17 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
                       <div className={styles.meta}>account not created yet · {invite.role}</div>
                     </div>
                     {isAdmin && (
-                      <button className={styles.remove} onClick={() => void handleRevoke(invite)}>
-                        Revoke
-                      </button>
+                      <>
+                        <button
+                          className={styles.inviteLink}
+                          onClick={() => void copyInviteLink(invite)}
+                        >
+                          {copiedInviteId === invite.id ? 'Copied!' : 'Copy link'}
+                        </button>
+                        <button className={styles.remove} onClick={() => void handleRevoke(invite)}>
+                          Revoke
+                        </button>
+                      </>
                     )}
                   </div>
                 ))}
