@@ -1,11 +1,24 @@
 import {
-  Controller, Get, Post, Delete, Patch, Param, Body, HttpCode, Req, UseGuards,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Patch,
+  Param,
+  Body,
+  Query,
+  HttpCode,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiSecurity } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { AddProjectMemberDto } from './dto/add-project-member.dto';
 import { UpdateProjectMemberRoleDto } from './dto/update-project-member-role.dto';
+import { CreateInviteDto } from './dto/create-invite.dto';
+import { SaveShareLinkDto } from './dto/save-share-link.dto';
 import { ProjectPermissionGuard } from '../../common/guards/project-permission.guard';
 import { RequireProjectPermission } from '../../common/decorators/project-permission.decorator';
 import { ProjectPermissionLevel } from './project-member.entity';
@@ -87,5 +100,43 @@ export class ProjectsController {
   @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
   removeMember(@Param('id') id: string, @Param('userId') userId: string) {
     return this.service.removeMember(id, userId);
+  }
+
+  @Post(':id/invites')
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  createInvite(
+    @Param('id') id: string,
+    @Body() dto: CreateInviteDto,
+    @Req() req: { currentUser: User },
+  ) {
+    return this.service.createInvite(id, dto, req.currentUser.id);
+  }
+
+  @Delete(':id/invites/:inviteId')
+  @HttpCode(204)
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  revokeInvite(@Param('id') id: string, @Param('inviteId') inviteId: string) {
+    return this.service.revokeInvite(id, inviteId);
+  }
+
+  @Get(':id/share-link')
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  getShareLink(@Param('id') id: string) {
+    return this.service.getShareLink(id);
+  }
+
+  @Put(':id/share-link')
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  saveShareLink(
+    @Param('id') id: string,
+    @Body() dto: SaveShareLinkDto,
+    @Query('regenerate') regenerate: string,
+    @Req() req: { currentUser: User },
+  ) {
+    return this.service.saveShareLink(id, dto, req.currentUser.id, regenerate === 'true');
   }
 }

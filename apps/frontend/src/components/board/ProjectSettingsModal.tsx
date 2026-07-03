@@ -5,7 +5,13 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
-import type { ProjectMember, ProjectPermissionLevel, User } from '@/lib/types';
+import type {
+  ProjectInvite,
+  ProjectMember,
+  ProjectPermissionLevel,
+  ShareLink,
+  User,
+} from '@/lib/types';
 import styles from './ProjectSettingsModal.module.css';
 
 const ROLES: ProjectPermissionLevel[] = ['viewer', 'collaborator', 'admin'];
@@ -46,6 +52,12 @@ interface ProjectSettingsModalProps {
 export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSettingsModalProps) {
   const { currentUser } = useAuth();
   const [members, setMembers] = useState<ProjectMember[]>([]);
+  const [invites, setInvites] = useState<ProjectInvite[]>([]);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<ProjectPermissionLevel>('viewer');
+  const [shareLink, setShareLink] = useState<ShareLink | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [copiedInviteId, setCopiedInviteId] = useState<string | null>(null);
   const [myPermission, setMyPermission] = useState<ProjectPermissionLevel | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [projectName, setProjectName] = useState('');
@@ -63,6 +75,7 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
     setProjectName(boardData.project.name);
     setCreatedById(boardData.project.createdById);
     setMembers(membersData.members);
+    setInvites(membersData.invites);
     setMyPermission(membersData.myPermission);
     setLoading(false);
   };
@@ -73,9 +86,21 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
 
   useEffect(() => {
     if (myPermission === 'admin') {
-      api.getUsers().then(setAllUsers).catch(() => {});
+      api
+        .getUsers()
+        .then(setAllUsers)
+        .catch(() => {});
     }
   }, [myPermission]);
+
+  useEffect(() => {
+    if (myPermission === 'admin') {
+      api
+        .getShareLink(projectId)
+        .then(setShareLink)
+        .catch(() => {});
+    }
+  }, [myPermission, projectId]);
 
   const isAdmin = myPermission === 'admin';
   const owner = useMemo(
@@ -84,10 +109,7 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
   );
 
   const addableUsers = useMemo(() => {
-    const taken = new Set([
-      ...(createdById ? [createdById] : []),
-      ...members.map((m) => m.userId),
-    ]);
+    const taken = new Set([...(createdById ? [createdById] : []), ...members.map((m) => m.userId)]);
     return allUsers.filter((u) => !taken.has(u.id));
   }, [allUsers, members, createdById]);
 
@@ -107,6 +129,59 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add member');
     }
+  };
+
+  const handleInvite = async () => {
+    if (!inviteEmail) return;
+    setError(null);
+    try {
+      await api.createInvite(projectId, inviteEmail, inviteRole);
+      setInviteEmail('');
+      setInviteRole('viewer');
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send invite');
+    }
+  };
+
+  const handleRevoke = async (invite: ProjectInvite) => {
+    if (!window.confirm(`Revoke the invite for ${invite.email}?`)) return;
+    setError(null);
+    try {
+      await api.revokeInvite(projectId, invite.id);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to revoke invite');
+    }
+  };
+
+  const joinUrl = (token: string) =>
+    `${typeof window !== 'undefined' ? window.location.origin : ''}/join/${token}`;
+
+  const saveLink = async (
+    data: { role: ProjectPermissionLevel; enabled: boolean },
+    regenerate = false,
+  ) => {
+    setError(null);
+    try {
+      const link = await api.saveShareLink(projectId, data, regenerate);
+      setShareLink(link);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update share link');
+    }
+  };
+
+  const copyLink = async () => {
+    if (!shareLink) return;
+    await navigator.clipboard.writeText(joinUrl(shareLink.token));
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
+  };
+
+  const copyInviteLink = async (invite: ProjectInvite) => {
+    await navigator.clipboard.writeText(joinUrl(invite.token));
+    setCopiedInviteId(invite.id);
+    window.setTimeout(() => setCopiedInviteId(null), 1500);
   };
 
   const handleRoleChange = async (userId: string, role: ProjectPermissionLevel) => {
@@ -158,10 +233,41 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
                 onChange={(e) => setNewRole(e.target.value as ProjectPermissionLevel)}
                 aria-label="Role for new member"
               >
-                {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                {ROLES.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
               </select>
               <Button disabled={!selectedUserId} onClick={() => void handleAdd()}>
                 Add
+              </Button>
+            </div>
+          )}
+
+          {isAdmin && (
+            <div className={styles.addRow}>
+              <input
+                className={styles.addSelect}
+                type="email"
+                placeholder="Invite by email…"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+              />
+              <select
+                className={styles.roleSelect}
+                value={inviteRole}
+                onChange={(e) => setInviteRole(e.target.value as ProjectPermissionLevel)}
+                aria-label="Role for invited email"
+              >
+                {ROLES.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+              <Button disabled={!inviteEmail} onClick={() => void handleInvite()}>
+                Invite
               </Button>
             </div>
           )}
@@ -197,7 +303,11 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
 
             {members.map((member) => (
               <div key={member.id} className={styles.row}>
-                <Avatar name={member.user.name} lastName={member.user.lastName} seed={member.userId} />
+                <Avatar
+                  name={member.user.name}
+                  lastName={member.user.lastName}
+                  seed={member.userId}
+                />
                 <div className={styles.who}>
                   <div className={styles.name}>
                     {member.user.name} {member.user.lastName}
@@ -210,9 +320,18 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
                     <select
                       className={styles.roleSelect}
                       value={member.role}
-                      onChange={(e) => void handleRoleChange(member.userId, e.target.value as ProjectPermissionLevel)}
+                      onChange={(e) =>
+                        void handleRoleChange(
+                          member.userId,
+                          e.target.value as ProjectPermissionLevel,
+                        )
+                      }
                     >
-                      {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                      {ROLES.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
                     </select>
                     <button className={styles.remove} onClick={() => void handleRemove(member)}>
                       Remove
@@ -224,6 +343,88 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
               </div>
             ))}
           </div>
+
+          {invites.length > 0 && (
+            <>
+              <div className={styles.sectionTitle}>
+                Pending invites <span className={styles.count}>{invites.length}</span>
+              </div>
+              <div className={styles.list}>
+                {invites.map((invite) => (
+                  <div key={invite.id} className={styles.row}>
+                    <Avatar name={invite.email} seed={invite.id} />
+                    <div className={styles.who}>
+                      <div className={styles.name}>{invite.email}</div>
+                      <div className={styles.meta}>account not created yet · {invite.role}</div>
+                    </div>
+                    {isAdmin && (
+                      <>
+                        <button
+                          className={styles.inviteLink}
+                          onClick={() => void copyInviteLink(invite)}
+                        >
+                          {copiedInviteId === invite.id ? 'Copied!' : 'Copy link'}
+                        </button>
+                        <button className={styles.remove} onClick={() => void handleRevoke(invite)}>
+                          Revoke
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {isAdmin && (
+            <div className={styles.shareSection}>
+              <div className={styles.sectionTitle}>Share link</div>
+              <label className={styles.shareToggle}>
+                <input
+                  type="checkbox"
+                  checked={!!shareLink?.enabled}
+                  onChange={(e) =>
+                    void saveLink({ role: shareLink?.role ?? 'viewer', enabled: e.target.checked })
+                  }
+                />
+                Anyone with the link can join
+              </label>
+
+              {shareLink?.enabled && (
+                <>
+                  <div className={styles.addRow}>
+                    <input className={styles.addSelect} readOnly value={joinUrl(shareLink.token)} />
+                    <Button onClick={() => void copyLink()}>{copied ? 'Copied!' : 'Copy'}</Button>
+                  </div>
+                  <div className={styles.addRow}>
+                    <select
+                      className={styles.roleSelect}
+                      value={shareLink.role}
+                      onChange={(e) =>
+                        void saveLink({
+                          role: e.target.value as ProjectPermissionLevel,
+                          enabled: true,
+                        })
+                      }
+                      aria-label="Role granted by share link"
+                    >
+                      {ROLES.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className={styles.remove}
+                      onClick={() => void saveLink({ role: shareLink.role, enabled: true }, true)}
+                    >
+                      Regenerate
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {error && <div className={styles.error}>{error}</div>}
         </div>

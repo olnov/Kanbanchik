@@ -46,6 +46,32 @@ export interface ProjectMember {
   user: User;
 }
 
+export interface ProjectInvite {
+  id: string;
+  projectId: string;
+  email: string;
+  role: ProjectPermissionLevel;
+  token: string;
+  invitedById: string;
+  createdAt: string;
+}
+
+export interface ShareLink {
+  id: string;
+  projectId: string;
+  token: string;
+  role: ProjectPermissionLevel;
+  enabled: boolean;
+  createdById: string;
+  createdAt: string;
+}
+
+export interface JoinPreview {
+  projectName: string;
+  kind: 'invite' | 'link';
+  invitedEmail?: string;
+}
+
 export interface BoardData {
   project: Project;
   stages: Stage[];

@@ -1,18 +1,26 @@
 import {
-  BadRequestException, ConflictException, Injectable, NotFoundException,
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Not, Repository } from 'typeorm';
 import { Project } from './project.entity';
 import { ProjectMember, ProjectPermissionLevel } from './project-member.entity';
+import { ProjectShareLink } from './project-share-link.entity';
+import { ProjectInvite } from './project-invite.entity';
 import { Stage } from '../stages/stage.entity';
 import { Card } from '../cards/card.entity';
 import { User } from '../users/user.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { AddProjectMemberDto } from './dto/add-project-member.dto';
 import { UpdateProjectMemberRoleDto } from './dto/update-project-member-role.dto';
+import { CreateInviteDto } from './dto/create-invite.dto';
+import { SaveShareLinkDto } from './dto/save-share-link.dto';
 import { DEFAULT_PROJECT_STAGES } from '../../database/project-defaults';
 import { PermissionService } from '../permissions/permission.service';
+import { generateToken } from '../../common/token';
 
 @Injectable()
 export class ProjectsService {
@@ -22,6 +30,9 @@ export class ProjectsService {
     @InjectRepository(Card) private readonly cardRepo: Repository<Card>,
     @InjectRepository(ProjectMember) private readonly memberRepo: Repository<ProjectMember>,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(ProjectShareLink)
+    private readonly shareLinkRepo: Repository<ProjectShareLink>,
+    @InjectRepository(ProjectInvite) private readonly inviteRepo: Repository<ProjectInvite>,
     private readonly permissionService: PermissionService,
   ) {}
 
@@ -46,7 +57,8 @@ export class ProjectsService {
 
       await stageRepo.save(
         DEFAULT_PROJECT_STAGES.map((stage) =>
-          stageRepo.create({ ...stage, projectId: project.id })),
+          stageRepo.create({ ...stage, projectId: project.id }),
+        ),
       );
 
       return projectRepo.findOneByOrFail({ id: project.id });
@@ -79,11 +91,12 @@ export class ProjectsService {
   }
 
   async getMembers(projectId: string, currentUserId: string) {
-    const [members, myPermission] = await Promise.all([
+    const [members, invites, myPermission] = await Promise.all([
       this.memberRepo.find({ where: { projectId } }),
+      this.inviteRepo.find({ where: { projectId }, order: { createdAt: 'ASC' } }),
       this.permissionService.getUserProjectPermission(currentUserId, projectId),
     ]);
-    return { members, myPermission };
+    return { members, invites, myPermission };
   }
 
   async getAssignableUsers(projectId: string): Promise<User[]> {
@@ -129,7 +142,9 @@ export class ProjectsService {
   }
 
   async updateMemberRole(
-    projectId: string, userId: string, dto: UpdateProjectMemberRoleDto,
+    projectId: string,
+    userId: string,
+    dto: UpdateProjectMemberRoleDto,
   ): Promise<ProjectMember> {
     const project = await this.projectRepo.findOneByOrFail({ id: projectId });
     if (project.createdById === userId) {
@@ -146,5 +161,77 @@ export class ProjectsService {
       throw new BadRequestException('Cannot remove the project creator');
     }
     await this.memberRepo.delete({ projectId, userId });
+  }
+
+  async createInvite(
+    projectId: string,
+    dto: CreateInviteDto,
+    invitedById: string,
+  ): Promise<ProjectInvite> {
+    await this.projectRepo.findOneByOrFail({ id: projectId });
+    const email = dto.email.trim().toLowerCase();
+
+    const existingInvite = await this.inviteRepo.findOne({ where: { projectId, email } });
+    if (existingInvite) throw new ConflictException('This email has already been invited');
+
+    const existingUser = await this.userRepo.findOneBy({ email });
+    if (existingUser) {
+      const project = await this.projectRepo.findOneByOrFail({ id: projectId });
+      const member = await this.memberRepo.findOne({
+        where: { projectId, userId: existingUser.id },
+      });
+      if (member || project.createdById === existingUser.id) {
+        throw new ConflictException('This user is already a member of the project');
+      }
+    }
+
+    return this.inviteRepo.save(
+      this.inviteRepo.create({
+        projectId,
+        email,
+        role: dto.role ?? ProjectPermissionLevel.VIEWER,
+        token: generateToken(),
+        invitedById,
+      }),
+    );
+  }
+
+  getInvites(projectId: string): Promise<ProjectInvite[]> {
+    return this.inviteRepo.find({ where: { projectId }, order: { createdAt: 'ASC' } });
+  }
+
+  async revokeInvite(projectId: string, inviteId: string): Promise<void> {
+    await this.inviteRepo.delete({ id: inviteId, projectId });
+  }
+
+  getShareLink(projectId: string): Promise<ProjectShareLink | null> {
+    return this.shareLinkRepo.findOne({ where: { projectId } });
+  }
+
+  async saveShareLink(
+    projectId: string,
+    dto: SaveShareLinkDto,
+    createdById: string,
+    regenerate: boolean,
+  ): Promise<ProjectShareLink> {
+    await this.projectRepo.findOneByOrFail({ id: projectId });
+    const existing = await this.shareLinkRepo.findOne({ where: { projectId } });
+
+    if (!existing) {
+      return this.shareLinkRepo.save(
+        this.shareLinkRepo.create({
+          projectId,
+          token: generateToken(),
+          role: dto.role,
+          enabled: dto.enabled,
+          createdById,
+        }),
+      );
+    }
+
+    existing.role = dto.role;
+    existing.enabled = dto.enabled;
+    if (regenerate) existing.token = generateToken();
+    return this.shareLinkRepo.save(existing);
   }
 }
