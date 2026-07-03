@@ -92,6 +92,15 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
     }
   }, [myPermission]);
 
+  useEffect(() => {
+    if (myPermission === 'admin') {
+      api
+        .getShareLink(projectId)
+        .then(setShareLink)
+        .catch(() => {});
+    }
+  }, [myPermission, projectId]);
+
   const isAdmin = myPermission === 'admin';
   const owner = useMemo(
     () => allUsers.find((u) => u.id === createdById) ?? null,
@@ -143,6 +152,29 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to revoke invite');
     }
+  };
+
+  const joinUrl = (token: string) =>
+    `${typeof window !== 'undefined' ? window.location.origin : ''}/join/${token}`;
+
+  const saveLink = async (
+    data: { role: ProjectPermissionLevel; enabled: boolean },
+    regenerate = false,
+  ) => {
+    setError(null);
+    try {
+      const link = await api.saveShareLink(projectId, data, regenerate);
+      setShareLink(link);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update share link');
+    }
+  };
+
+  const copyLink = async () => {
+    if (!shareLink) return;
+    await navigator.clipboard.writeText(joinUrl(shareLink.token));
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
   };
 
   const handleRoleChange = async (userId: string, role: ProjectPermissionLevel) => {
@@ -327,6 +359,56 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
                 ))}
               </div>
             </>
+          )}
+
+          {isAdmin && (
+            <div className={styles.shareSection}>
+              <div className={styles.sectionTitle}>Share link</div>
+              <label className={styles.shareToggle}>
+                <input
+                  type="checkbox"
+                  checked={!!shareLink?.enabled}
+                  onChange={(e) =>
+                    void saveLink({ role: shareLink?.role ?? 'viewer', enabled: e.target.checked })
+                  }
+                />
+                Anyone with the link can join
+              </label>
+
+              {shareLink?.enabled && (
+                <>
+                  <div className={styles.addRow}>
+                    <input className={styles.addSelect} readOnly value={joinUrl(shareLink.token)} />
+                    <Button onClick={() => void copyLink()}>{copied ? 'Copied!' : 'Copy'}</Button>
+                  </div>
+                  <div className={styles.addRow}>
+                    <select
+                      className={styles.roleSelect}
+                      value={shareLink.role}
+                      onChange={(e) =>
+                        void saveLink({
+                          role: e.target.value as ProjectPermissionLevel,
+                          enabled: true,
+                        })
+                      }
+                      aria-label="Role granted by share link"
+                    >
+                      {ROLES.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className={styles.remove}
+                      onClick={() => void saveLink({ role: shareLink.role, enabled: true }, true)}
+                    >
+                      Regenerate
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           )}
 
           {error && <div className={styles.error}>{error}</div>}
