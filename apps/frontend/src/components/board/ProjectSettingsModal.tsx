@@ -5,7 +5,13 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
-import type { ProjectMember, ProjectPermissionLevel, User } from '@/lib/types';
+import type {
+  ProjectInvite,
+  ProjectMember,
+  ProjectPermissionLevel,
+  ShareLink,
+  User,
+} from '@/lib/types';
 import styles from './ProjectSettingsModal.module.css';
 
 const ROLES: ProjectPermissionLevel[] = ['viewer', 'collaborator', 'admin'];
@@ -46,6 +52,11 @@ interface ProjectSettingsModalProps {
 export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSettingsModalProps) {
   const { currentUser } = useAuth();
   const [members, setMembers] = useState<ProjectMember[]>([]);
+  const [invites, setInvites] = useState<ProjectInvite[]>([]);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<ProjectPermissionLevel>('viewer');
+  const [shareLink, setShareLink] = useState<ShareLink | null>(null);
+  const [copied, setCopied] = useState(false);
   const [myPermission, setMyPermission] = useState<ProjectPermissionLevel | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [projectName, setProjectName] = useState('');
@@ -63,6 +74,7 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
     setProjectName(boardData.project.name);
     setCreatedById(boardData.project.createdById);
     setMembers(membersData.members);
+    setInvites(membersData.invites);
     setMyPermission(membersData.myPermission);
     setLoading(false);
   };
@@ -73,7 +85,10 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
 
   useEffect(() => {
     if (myPermission === 'admin') {
-      api.getUsers().then(setAllUsers).catch(() => {});
+      api
+        .getUsers()
+        .then(setAllUsers)
+        .catch(() => {});
     }
   }, [myPermission]);
 
@@ -84,10 +99,7 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
   );
 
   const addableUsers = useMemo(() => {
-    const taken = new Set([
-      ...(createdById ? [createdById] : []),
-      ...members.map((m) => m.userId),
-    ]);
+    const taken = new Set([...(createdById ? [createdById] : []), ...members.map((m) => m.userId)]);
     return allUsers.filter((u) => !taken.has(u.id));
   }, [allUsers, members, createdById]);
 
@@ -106,6 +118,30 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add member');
+    }
+  };
+
+  const handleInvite = async () => {
+    if (!inviteEmail) return;
+    setError(null);
+    try {
+      await api.createInvite(projectId, inviteEmail, inviteRole);
+      setInviteEmail('');
+      setInviteRole('viewer');
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send invite');
+    }
+  };
+
+  const handleRevoke = async (invite: ProjectInvite) => {
+    if (!window.confirm(`Revoke the invite for ${invite.email}?`)) return;
+    setError(null);
+    try {
+      await api.revokeInvite(projectId, invite.id);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to revoke invite');
     }
   };
 
@@ -158,10 +194,41 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
                 onChange={(e) => setNewRole(e.target.value as ProjectPermissionLevel)}
                 aria-label="Role for new member"
               >
-                {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                {ROLES.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
               </select>
               <Button disabled={!selectedUserId} onClick={() => void handleAdd()}>
                 Add
+              </Button>
+            </div>
+          )}
+
+          {isAdmin && (
+            <div className={styles.addRow}>
+              <input
+                className={styles.addSelect}
+                type="email"
+                placeholder="Invite by email…"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+              />
+              <select
+                className={styles.roleSelect}
+                value={inviteRole}
+                onChange={(e) => setInviteRole(e.target.value as ProjectPermissionLevel)}
+                aria-label="Role for invited email"
+              >
+                {ROLES.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+              <Button disabled={!inviteEmail} onClick={() => void handleInvite()}>
+                Invite
               </Button>
             </div>
           )}
@@ -197,7 +264,11 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
 
             {members.map((member) => (
               <div key={member.id} className={styles.row}>
-                <Avatar name={member.user.name} lastName={member.user.lastName} seed={member.userId} />
+                <Avatar
+                  name={member.user.name}
+                  lastName={member.user.lastName}
+                  seed={member.userId}
+                />
                 <div className={styles.who}>
                   <div className={styles.name}>
                     {member.user.name} {member.user.lastName}
@@ -210,9 +281,18 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
                     <select
                       className={styles.roleSelect}
                       value={member.role}
-                      onChange={(e) => void handleRoleChange(member.userId, e.target.value as ProjectPermissionLevel)}
+                      onChange={(e) =>
+                        void handleRoleChange(
+                          member.userId,
+                          e.target.value as ProjectPermissionLevel,
+                        )
+                      }
                     >
-                      {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                      {ROLES.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
                     </select>
                     <button className={styles.remove} onClick={() => void handleRemove(member)}>
                       Remove
@@ -224,6 +304,30 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
               </div>
             ))}
           </div>
+
+          {invites.length > 0 && (
+            <>
+              <div className={styles.sectionTitle}>
+                Pending invites <span className={styles.count}>{invites.length}</span>
+              </div>
+              <div className={styles.list}>
+                {invites.map((invite) => (
+                  <div key={invite.id} className={styles.row}>
+                    <Avatar name={invite.email} seed={invite.id} />
+                    <div className={styles.who}>
+                      <div className={styles.name}>{invite.email}</div>
+                      <div className={styles.meta}>account not created yet · {invite.role}</div>
+                    </div>
+                    {isAdmin && (
+                      <button className={styles.remove} onClick={() => void handleRevoke(invite)}>
+                        Revoke
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
           {error && <div className={styles.error}>{error}</div>}
         </div>
