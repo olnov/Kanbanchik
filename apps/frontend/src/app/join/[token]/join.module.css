@@ -1,0 +1,88 @@
+.center {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.card {
+  max-width: 24rem;
+  margin: 4rem auto;
+  padding: 2rem;
+  border-radius: 12px;
+  background: var(--color-surface);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+.title {
+  margin: 0 0 1.25rem;
+  font-size: 1.35rem;
+  color: var(--color-text-primary);
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tab,
+.tabActive {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.tabActive {
+  background: var(--color-indigo);
+  color: #fff;
+}
+
+.input {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.primary {
+  width: 100%;
+  padding: 0.65rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-indigo);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.error {
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.hint {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
