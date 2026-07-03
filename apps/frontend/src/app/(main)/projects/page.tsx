@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 import { dispatchProjectsUpdated } from '@/lib/project-events';
 import type { Project } from '@/lib/types';
 import styles from './page.module.css';
 
 export default function ProjectsPage() {
   const router = useRouter();
+  const { currentUser } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -21,7 +23,8 @@ export default function ProjectsPage() {
   useEffect(() => {
     let isMounted = true;
 
-    api.getProjects()
+    api
+      .getProjects()
       .then((data) => {
         if (isMounted) {
           setProjects(data);
@@ -123,8 +126,8 @@ export default function ProjectsPage() {
         <div className={styles.emptyState}>
           <div className={styles.emptyTitle}>No projects yet</div>
           <div className={styles.emptyText}>
-            Create your first project here. Each new project gets To Do, In Progress, Review,
-            and Done columns automatically.
+            Create your first project here. Each new project gets To Do, In Progress, Review, and
+            Done columns automatically.
           </div>
         </div>
       ) : (
@@ -135,16 +138,18 @@ export default function ProjectsPage() {
                 <div className={styles.cardName}>{p.name}</div>
                 <div className={styles.cardMeta}>Open board and add cards</div>
               </Link>
-              <div className={styles.cardActions}>
-                <Button
-                  type="button"
-                  variant="danger"
-                  onClick={() => void handleDeleteProject(p)}
-                  disabled={deletingProjectId === p.id}
-                >
-                  {deletingProjectId === p.id ? 'Deleting...' : 'Delete Project'}
-                </Button>
-              </div>
+              {p.createdById === currentUser?.id && (
+                <div className={styles.cardActions}>
+                  <Button
+                    type="button"
+                    variant="danger"
+                    onClick={() => void handleDeleteProject(p)}
+                    disabled={deletingProjectId === p.id}
+                  >
+                    {deletingProjectId === p.id ? 'Deleting...' : 'Delete Project'}
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
         </div>
