@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type {
   DraggableProvidedDragHandleProps,
   DraggableProvidedDraggableProps,
@@ -53,10 +53,32 @@ export function Column({
   const [draftName, setDraftName] = useState(stage.name);
   const [editingName, setEditingName] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuWrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setDraftName(stage.name);
   }, [stage.name]);
+
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    const onClick = (e: MouseEvent) => {
+      if (menuWrapRef.current && !menuWrapRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClick);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClick);
+    };
+  }, [menuOpen]);
 
   const handleRename = async () => {
     try {
@@ -119,12 +141,14 @@ export function Column({
               autoFocus
             />
           ) : (
-            <span className={styles.title} style={{ color: colors.color }}>{stage.name}</span>
+            <span className={styles.title} style={{ color: colors.color }}>
+              {stage.name}
+            </span>
           )}
           <span className={styles.count}>{cards.length}</span>
         </div>
         {myPermission === 'admin' && (
-          <div className={styles.menuWrap}>
+          <div className={styles.menuWrap} ref={menuWrapRef}>
             <button
               type="button"
               className={styles.menuButton}
@@ -161,11 +185,7 @@ export function Column({
       </div>
       <Droppable droppableId={stage.id}>
         {(provided) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            className={styles.cards}
-          >
+          <div ref={provided.innerRef} {...provided.droppableProps} className={styles.cards}>
             {cards.map((card, i) => (
               <Card
                 key={card.id}
