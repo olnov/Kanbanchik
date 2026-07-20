@@ -7,6 +7,7 @@ import { User } from '../users/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { MattermostService } from './mattermost.service';
+import { GitLabProfile, GitLabService } from './gitlab.service';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,7 @@ export class AuthService {
     private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly mattermostService: MattermostService,
+    private readonly gitlabService: GitLabService,
   ) {}
 
   async register(dto: RegisterDto): Promise<User> {
@@ -69,6 +71,34 @@ export class AuthService {
         passwordHash: '',
         authProvider: 'mattermost',
         mattermostUserId: profile.id,
+      }),
+    );
+    return this.userRepo.findOneByOrFail({ id: saved.id });
+  }
+
+  async loginWithGitLab(code: string): Promise<User> {
+    const profile = await this.gitlabService.authenticate(code);
+    return this.findOrCreateGitLabUser(profile);
+  }
+
+  private async findOrCreateGitLabUser(profile: GitLabProfile): Promise<User> {
+    const existingByGitLab = await this.userRepo.findOneBy({ gitlabUserId: profile.id });
+    if (existingByGitLab) return existingByGitLab;
+
+    const emailTaken = await this.userRepo.findOneBy({ email: profile.email });
+    if (emailTaken) {
+      throw new ConflictException('An account with this email already exists');
+    }
+
+    const saved = await this.userRepo.save(
+      this.userRepo.create({
+        name: (profile.firstName || profile.username).trim(),
+        lastName: profile.lastName.trim(),
+        email: profile.email,
+        role: '',
+        passwordHash: '',
+        authProvider: 'gitlab',
+        gitlabUserId: profile.id,
       }),
     );
     return this.userRepo.findOneByOrFail({ id: saved.id });

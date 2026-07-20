@@ -39,6 +39,10 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   mattermostUserId: string | null;
 
+  @ApiProperty({ nullable: true })
+  @Column({ type: 'varchar', nullable: true, unique: true })
+  gitlabUserId: string | null;
+
   @Column({ select: false, default: '' })
   passwordHash: string;
 }

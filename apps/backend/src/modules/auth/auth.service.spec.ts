@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { MattermostService } from './mattermost.service';
+import { GitLabService } from './gitlab.service';
 import { User } from '../users/user.entity';
 
 const mockUserRepo = {
@@ -16,6 +17,7 @@ const mockUserRepo = {
 };
 const mockJwt = { sign: jest.fn().mockReturnValue('token') };
 const mockMattermost = { authenticate: jest.fn() };
+const mockGitLab = { authenticate: jest.fn() };
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -28,16 +30,61 @@ describe('AuthService', () => {
         { provide: getRepositoryToken(User), useValue: mockUserRepo },
         { provide: JwtService, useValue: mockJwt },
         { provide: MattermostService, useValue: mockMattermost },
+        { provide: GitLabService, useValue: mockGitLab },
       ],
     }).compile();
     service = module.get(AuthService);
   });
 
+  describe('loginWithGitLab', () => {
+    const profile = {
+      id: '42',
+      email: 'gitlab@example.com',
+      firstName: 'Git',
+      lastName: 'Lab',
+      username: 'gitlab-user',
+    };
+
+    it('returns an existing user matched by GitLab id', async () => {
+      mockGitLab.authenticate.mockResolvedValue(profile);
+      mockUserRepo.findOneBy.mockImplementation(({ gitlabUserId }) =>
+        gitlabUserId === '42' ? { id: 'u1', email: profile.email } : null,
+      );
+
+      await expect(service.loginWithGitLab('code')).resolves.toEqual({
+        id: 'u1',
+        email: profile.email,
+      });
+      expect(mockUserRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('provisions a new GitLab user', async () => {
+      mockGitLab.authenticate.mockResolvedValue(profile);
+      mockUserRepo.findOneBy.mockResolvedValue(null);
+      mockUserRepo.create.mockImplementation((v) => v);
+      mockUserRepo.save.mockResolvedValue({ id: 'new-1' });
+      mockUserRepo.findOneByOrFail.mockResolvedValue({ id: 'new-1', email: profile.email });
+
+      await expect(service.loginWithGitLab('code')).resolves.toEqual({
+        id: 'new-1',
+        email: profile.email,
+      });
+      expect(mockUserRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          authProvider: 'gitlab',
+          gitlabUserId: '42',
+          passwordHash: '',
+        }),
+      );
+    });
+  });
+
   describe('register', () => {
     it('throws ConflictException when email already exists', async () => {
       mockUserRepo.findOneBy.mockResolvedValue({ id: 'u1' });
-      await expect(service.register({ name: 'A', lastName: 'B', email: 'a@b.com', password: 'pass1234' }))
-        .rejects.toThrow(ConflictException);
+      await expect(
+        service.register({ name: 'A', lastName: 'B', email: 'a@b.com', password: 'pass1234' }),
+      ).rejects.toThrow(ConflictException);
     });
 
     it('creates user with hashed password and returns user without hash', async () => {
@@ -46,7 +93,12 @@ describe('AuthService', () => {
       mockUserRepo.save.mockResolvedValue({ id: 'u1' });
       mockUserRepo.findOneByOrFail.mockResolvedValue({ id: 'u1', email: 'a@b.com' });
 
-      const result = await service.register({ name: 'Alice', lastName: 'J', email: 'a@b.com', password: 'password123' });
+      const result = await service.register({
+        name: 'Alice',
+        lastName: 'J',
+        email: 'a@b.com',
+        password: 'password123',
+      });
       expect(result).toEqual({ id: 'u1', email: 'a@b.com' });
       expect(mockUserRepo.save).toHaveBeenCalledWith(
         expect.objectContaining({ passwordHash: expect.any(String) }),
@@ -56,23 +108,37 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('throws UnauthorizedException for unknown email', async () => {
-      const qb = { addSelect: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), getOne: jest.fn().mockResolvedValue(null) };
+      const qb = {
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null),
+      };
       mockUserRepo.createQueryBuilder.mockReturnValue(qb);
-      await expect(service.login({ email: 'x@y.com', password: 'abc' }))
-        .rejects.toThrow(UnauthorizedException);
+      await expect(service.login({ email: 'x@y.com', password: 'abc' })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('throws UnauthorizedException for wrong password', async () => {
       const hash = await bcrypt.hash('correct', 10);
-      const qb = { addSelect: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), getOne: jest.fn().mockResolvedValue({ id: 'u1', passwordHash: hash }) };
+      const qb = {
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue({ id: 'u1', passwordHash: hash }),
+      };
       mockUserRepo.createQueryBuilder.mockReturnValue(qb);
-      await expect(service.login({ email: 'x@y.com', password: 'wrong' }))
-        .rejects.toThrow(UnauthorizedException);
+      await expect(service.login({ email: 'x@y.com', password: 'wrong' })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('returns user without hash on correct credentials', async () => {
       const hash = await bcrypt.hash('secret', 10);
-      const qb = { addSelect: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), getOne: jest.fn().mockResolvedValue({ id: 'u1', passwordHash: hash }) };
+      const qb = {
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue({ id: 'u1', passwordHash: hash }),
+      };
       mockUserRepo.createQueryBuilder.mockReturnValue(qb);
       mockUserRepo.findOneByOrFail.mockResolvedValue({ id: 'u1', email: 'x@y.com' });
       const result = await service.login({ email: 'x@y.com', password: 'secret' });
@@ -82,7 +148,11 @@ describe('AuthService', () => {
 
   describe('loginWithMattermost', () => {
     const profile = {
-      id: 'mm-1', email: 'a@b.com', firstName: 'Al', lastName: 'Ice', username: 'alice',
+      id: 'mm-1',
+      email: 'a@b.com',
+      firstName: 'Al',
+      lastName: 'Ice',
+      username: 'alice',
     };
 
     it('returns existing user matched by mattermostUserId', async () => {

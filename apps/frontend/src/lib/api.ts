@@ -56,6 +56,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ loginId, password }),
     }),
+  gitlabLoginUrl: () => `${BASE}/auth/gitlab`,
   register: (data: { name: string; lastName: string; email: string; password: string }) =>
     fetchJson<User>('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   logout: () => fetchJson<void>('/auth/logout', { method: 'POST' }),

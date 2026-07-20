@@ -99,6 +99,12 @@ GROQ_MODEL=openai/gpt-oss-20b
 AUTO_SEED_DEMO=true
 MATTERMOST_ENABLED=false
 MATTERMOST_URL=
+GITLAB_ENABLED=false
+GITLAB_URL=https://gitlab.com
+GITLAB_CLIENT_ID=
+GITLAB_CLIENT_SECRET=
+GITLAB_REDIRECT_URI=http://localhost:3001/api/v1/auth/gitlab/callback
+FRONTEND_URL=http://localhost:3000
 ```
 
 ### Mattermost login (optional)
@@ -114,6 +120,19 @@ On first login, a Kanbanchik account is provisioned automatically from the Matte
 profile. Returning users are matched by their Mattermost user id. If a Mattermost
 profile's email already belongs to an existing account, the login is rejected so accounts
 are never silently merged.
+
+### GitLab login (optional)
+
+GitLab uses OAuth 2.0; Kanbanchik never receives a GitLab password. Create an OAuth
+application in GitLab with the redirect URI `GITLAB_REDIRECT_URI`, then configure:
+
+1. In the backend environment, set `GITLAB_ENABLED=true`, `GITLAB_URL` (use `https://gitlab.com` or your self-hosted URL), `GITLAB_CLIENT_ID`, `GITLAB_CLIENT_SECRET`, `GITLAB_REDIRECT_URI`, and `FRONTEND_URL`.
+2. Set `NEXT_PUBLIC_GITLAB_ENABLED=true` for the frontend.
+3. Add the exact value of `GITLAB_REDIRECT_URI` to GitLab OAuth application's redirect URIs and restart both apps.
+
+On a successful callback, the application creates a local user or finds one by the
+stable GitLab user ID. An existing local account with the same email is not merged
+automatically.
 
 ### Run apps
 

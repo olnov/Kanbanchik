@@ -85,6 +85,10 @@ export default function LoginPage() {
     }
   };
 
+  const handleGitLabLogin = () => {
+    window.location.assign(api.gitlabLoginUrl());
+  };
+
   const emailForm = (
     <form onSubmit={(e) => void handleSubmit(e)}>
       <div className={styles.field}>
@@ -235,6 +239,17 @@ export default function LoginPage() {
             </div>
           </section>
         </div>
+      )}
+
+      {process.env.NEXT_PUBLIC_GITLAB_ENABLED === 'true' && (
+        <button
+          className={styles.primary}
+          type="button"
+          onClick={handleGitLabLogin}
+          disabled={loading}
+        >
+          Sign in with GitLab
+        </button>
       )}
 
       <p className={styles.switch}>

@@ -1,5 +1,6 @@
 import type { FastifyReply } from 'fastify';
 import { AuthController } from './auth.controller';
+import { ConfigService } from '@nestjs/config';
 
 describe('AuthController', () => {
   const user = { id: 'u1', email: 'a@b.com' };
@@ -7,6 +8,7 @@ describe('AuthController', () => {
     register: jest.fn(),
     login: jest.fn(),
     loginWithMattermost: jest.fn(),
+    loginWithGitLab: jest.fn(),
     signToken: jest.fn(),
   };
 
@@ -14,6 +16,7 @@ describe('AuthController', () => {
     return {
       setCookie: jest.fn(),
       clearCookie: jest.fn(),
+      redirect: jest.fn(),
     } as unknown as FastifyReply & { setCookie: jest.Mock };
   }
 
@@ -26,7 +29,11 @@ describe('AuthController', () => {
     const originalNodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
     authService.login.mockResolvedValue(user);
-    const controller = new AuthController(authService as never);
+    const controller = new AuthController(
+      authService as never,
+      { getAuthorizationUrl: jest.fn() } as never,
+      { get: jest.fn() } as unknown as ConfigService,
+    );
     const reply = makeReply();
 
     try {
