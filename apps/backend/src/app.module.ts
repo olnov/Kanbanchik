@@ -28,6 +28,7 @@ import { DevBootstrapService } from './database/dev-bootstrap.service';
         url: config.getOrThrow<string>('DATABASE_URL'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
+        migrationsRun: process.env.NODE_ENV === 'production',
         synchronize: process.env.NODE_ENV === 'development',
         logging: process.env.NODE_ENV === 'development',
       }),

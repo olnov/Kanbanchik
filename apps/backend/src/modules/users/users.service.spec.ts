@@ -13,6 +13,7 @@ const mockUser: User = {
   availability: 'available',
   authProvider: 'local',
   mattermostUserId: null,
+  gitlabUserId: null,
   passwordHash: '',
 };
 
@@ -29,10 +30,7 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        UsersService,
-        { provide: getRepositoryToken(User), useValue: mockRepo },
-      ],
+      providers: [UsersService, { provide: getRepositoryToken(User), useValue: mockRepo }],
     }).compile();
     service = module.get(UsersService);
   });

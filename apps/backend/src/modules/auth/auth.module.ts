@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { User } from '../users/user.entity';
 import { AuthService } from './auth.service';
 import { MattermostService } from './mattermost.service';
+import { GitLabService } from './gitlab.service';
 import { AuthController } from './auth.controller';
 
 @Module({
@@ -18,7 +19,7 @@ import { AuthController } from './auth.controller';
       }),
     }),
   ],
-  providers: [AuthService, MattermostService],
+  providers: [AuthService, MattermostService, GitLabService],
   controllers: [AuthController],
   exports: [JwtModule],
 })
