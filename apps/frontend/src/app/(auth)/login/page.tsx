@@ -45,6 +45,14 @@ export default function LoginPage() {
   const mmRef = useRef<HTMLInputElement>(null);
   const didMount = useRef(false);
 
+  useEffect(() => {
+    const oauthError = new URLSearchParams(window.location.search).get('oauth_error');
+    if (oauthError === 'gitlab_email_conflict') {
+      setError('An account with this email already exists. Sign in with your existing method.');
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
   // Move focus to the first field of the panel the user just opened.
   useEffect(() => {
     if (!mattermostEnabled) return;
