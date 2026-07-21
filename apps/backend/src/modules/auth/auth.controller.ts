@@ -6,6 +6,7 @@ import {
   Res,
   Req,
   Query,
+  ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -24,7 +25,7 @@ function getCookieOptions() {
   const isProduction = process.env.NODE_ENV === 'production';
   return {
     httpOnly: true,
-    sameSite: isProduction ? ('none' as const) : ('strict' as const),
+    sameSite: isProduction ? ('none' as const) : ('lax' as const),
     secure: isProduction,
     path: '/',
   };
@@ -79,10 +80,10 @@ export class AuthController {
 
   @Get('gitlab')
   @Public()
-  loginGitLab(@Res({ passthrough: true }) reply: FastifyReply) {
+  loginGitLab(@Res() reply: FastifyReply) {
     const state = randomBytes(32).toString('base64url');
     reply.setCookie('gitlab_oauth_state', state, getOAuthStateCookieOptions());
-    return reply.redirect(this.gitlabService.getAuthorizationUrl(state));
+    return reply.code(302).redirect(this.gitlabService.getAuthorizationUrl(state));
   }
 
   @Get('gitlab/callback')
@@ -92,22 +93,26 @@ export class AuthController {
     @Query('state') state: string | undefined,
     @Query('error') gitLabError: string | undefined,
     @Req() req: { cookies: Record<string, string | undefined> },
-    @Res({ passthrough: true }) reply: FastifyReply,
+    @Res() reply: FastifyReply,
   ) {
     const expectedState = req.cookies.gitlab_oauth_state;
     reply.clearCookie('gitlab_oauth_state', { path: '/' });
     if (!state || !expectedState || !sameState(state, expectedState)) {
       throw new UnauthorizedException('Invalid GitLab login state');
     }
-    if (gitLabError || !code)
-      return reply.redirect(this.frontendLoginUrl('gitlab_authorization_failed'));
+    if (gitLabError || !code) {
+      return reply.code(302).redirect(this.frontendLoginUrl('gitlab_authorization_failed'));
+    }
 
     try {
       const user = await this.authService.loginWithGitLab(code);
       reply.setCookie('access_token', this.authService.signToken(user.id), getCookieOptions());
-      return reply.redirect(this.frontendLoginUrl());
-    } catch {
-      return reply.redirect(this.frontendLoginUrl('gitlab_login_failed'));
+      return reply.code(302).redirect(this.frontendUrl('/projects').toString());
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        return reply.code(302).redirect(this.frontendLoginUrl('gitlab_email_conflict'));
+      }
+      return reply.code(302).redirect(this.frontendLoginUrl('gitlab_login_failed'));
     }
   }
 
@@ -124,12 +129,13 @@ export class AuthController {
   }
 
   private frontendLoginUrl(error?: string): string {
-    const url = new URL(
-      '/login',
-      this.config.get<string>('FRONTEND_URL') ?? 'http://localhost:3000',
-    );
+    const url = this.frontendUrl('/login');
     if (error) url.searchParams.set('oauth_error', error);
     return url.toString();
+  }
+
+  private frontendUrl(path: string): URL {
+    return new URL(path, this.config.get<string>('FRONTEND_URL') ?? 'http://localhost:3000');
   }
 }
 
