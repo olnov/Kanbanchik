@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useCallback, useEffect, useState } from 'react';
+import { use, useCallback, useEffect, useMemo, useState } from 'react';
 import { Board } from '@/components/board/Board';
 import { CardModal } from '@/components/board/CardModal';
 import { AiImportModal } from '@/components/board/AiImportModal';
@@ -44,13 +44,16 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
     loadBoard();
   }, [loadBoard]);
 
-  if (error) return <div className={styles.status}>{error}</div>;
-  if (!data) return <div className={styles.status}>Loading...</div>;
+  const filteredData: BoardData | null = useMemo(() => {
+    if (!data) return null;
+    return {
+      ...data,
+      cards: filterCards(data.cards, filter, currentUser?.id),
+    };
+  }, [data, filter, currentUser?.id]);
 
-  const filteredData: BoardData = {
-    ...data,
-    cards: filterCards(data.cards, filter, currentUser?.id),
-  };
+  if (error) return <div className={styles.status}>{error}</div>;
+  if (!data || !filteredData) return <div className={styles.status}>Loading...</div>;
 
   return (
     <div className={styles.page}>
