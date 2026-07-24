@@ -7,8 +7,8 @@ import { AiImportModal } from '@/components/board/AiImportModal';
 import { ProjectSettingsModal } from '@/components/board/ProjectSettingsModal';
 import { BoardTopbar } from '@/components/board/BoardTopbar';
 import { useAuth } from '@/contexts/AuthContext';
-import { filterCards, EMPTY_FILTER } from '@/lib/filterCards';
-import type { BoardFilter } from '@/lib/filterCards';
+import { filterCards } from '@/lib/filterCards';
+import { useBoardFilter } from '@/lib/useBoardFilter';
 import { api } from '@/lib/api';
 import type { BoardData, Card, User } from '@/lib/types';
 import styles from './page.module.css';
@@ -24,7 +24,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
   const [error, setError] = useState<string | null>(null);
 
   const { currentUser } = useAuth();
-  const [filter, setFilter] = useState<BoardFilter>(EMPTY_FILTER);
+  const [filter, setFilter] = useBoardFilter(id);
 
   const loadBoard = useCallback(async () => {
     try {
