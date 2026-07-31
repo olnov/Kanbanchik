@@ -10,6 +10,7 @@ import { User } from '../users/user.entity';
 import { ProjectsService } from './projects.service';
 import { ProjectsController } from './projects.controller';
 import { PermissionsModule } from '../permissions/permissions.module';
+import { CardCodeService } from './card-code.service';
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import { PermissionsModule } from '../permissions/permissions.module';
     ]),
     PermissionsModule,
   ],
-  providers: [ProjectsService],
+  providers: [ProjectsService, CardCodeService],
   controllers: [ProjectsController],
-  exports: [ProjectsService],
+  exports: [ProjectsService, CardCodeService],
 })
 export class ProjectsModule {}

@@ -1,6 +1,11 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column, ManyToOne,
-  DeleteDateColumn, OneToMany, JoinColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  DeleteDateColumn,
+  OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
@@ -15,6 +20,18 @@ export class Project {
   @ApiProperty()
   @Column()
   name: string;
+
+  @ApiProperty({ default: true })
+  @Column({ default: true })
+  cardCodeEnabled: boolean;
+
+  @ApiProperty({ default: '{PROJECT:4}-{NUMBER}' })
+  @Column({ default: '{PROJECT:4}-{NUMBER}' })
+  cardCodePattern: string;
+
+  @ApiProperty({ default: 1 })
+  @Column({ type: 'integer', default: 1 })
+  nextCardNumber: number;
 
   @ApiProperty({ required: false, nullable: true })
   @Column({ type: 'uuid', nullable: true })

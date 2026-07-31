@@ -23,6 +23,15 @@ const AVATAR_COLORS = [
   'var(--color-purple)',
 ];
 
+function renderCodePreview(pattern: string, projectName: string, number: number): string {
+  const compactName = projectName.replace(/\s+/gu, '').toUpperCase();
+  return pattern
+    .replace(/\{PROJECT(?::(\d+))?\}/gu, (_token, length?: string) =>
+      length ? Array.from(compactName).slice(0, Number(length)).join('') : compactName,
+    )
+    .replace(/\{NUMBER\}/gu, String(number));
+}
+
 function initials(name: string, lastName?: string): string {
   const first = name.trim().charAt(0);
   const second = (lastName ?? name.trim().split(/\s+/)[1] ?? '').charAt(0);
@@ -62,6 +71,11 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [projectName, setProjectName] = useState('');
   const [createdById, setCreatedById] = useState<string | null>(null);
+  const [cardCodeEnabled, setCardCodeEnabled] = useState(true);
+  const [cardCodePattern, setCardCodePattern] = useState('{PROJECT:4}-{NUMBER}');
+  const [nextCardNumber, setNextCardNumber] = useState(1);
+  const [savingCardCode, setSavingCardCode] = useState(false);
+  const [cardCodeSaved, setCardCodeSaved] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState('');
   const [newRole, setNewRole] = useState<ProjectPermissionLevel>('viewer');
   const [error, setError] = useState<string | null>(null);
@@ -74,6 +88,9 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
     ]);
     setProjectName(boardData.project.name);
     setCreatedById(boardData.project.createdById);
+    setCardCodeEnabled(boardData.project.cardCodeEnabled);
+    setCardCodePattern(boardData.project.cardCodePattern);
+    setNextCardNumber(boardData.project.nextCardNumber);
     setMembers(membersData.members);
     setInvites(membersData.invites);
     setMyPermission(membersData.myPermission);
@@ -205,6 +222,27 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
     }
   };
 
+  const handleSaveCardCode = async () => {
+    setError(null);
+    setCardCodeSaved(false);
+    setSavingCardCode(true);
+    try {
+      const project = await api.updateCardCodeSettings(projectId, {
+        enabled: cardCodeEnabled,
+        pattern: cardCodePattern,
+      });
+      setCardCodeEnabled(project.cardCodeEnabled);
+      setCardCodePattern(project.cardCodePattern);
+      setNextCardNumber(project.nextCardNumber);
+      setCardCodeSaved(true);
+      onChange?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update card codes');
+    } finally {
+      setSavingCardCode(false);
+    }
+  };
+
   const memberCount = members.length + (createdById ? 1 : 0);
 
   return (
@@ -270,6 +308,60 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
                 Invite
               </Button>
             </div>
+          )}
+
+          {isAdmin && (
+            <section className={styles.cardCodeSection}>
+              <div className={styles.sectionTitle}>Card codes</div>
+              <label className={styles.shareToggle}>
+                <input
+                  type="checkbox"
+                  checked={cardCodeEnabled}
+                  onChange={(event) => {
+                    setCardCodeEnabled(event.target.checked);
+                    setCardCodeSaved(false);
+                  }}
+                />
+                Add a generated code to new card titles
+              </label>
+              <label className={styles.fieldLabel} htmlFor="card-code-pattern">
+                Code pattern
+              </label>
+              <div className={styles.addRowCompact}>
+                <input
+                  id="card-code-pattern"
+                  className={styles.addSelect}
+                  value={cardCodePattern}
+                  maxLength={80}
+                  disabled={!cardCodeEnabled}
+                  onChange={(event) => {
+                    setCardCodePattern(event.target.value);
+                    setCardCodeSaved(false);
+                  }}
+                  aria-describedby="card-code-help"
+                />
+                <Button
+                  disabled={
+                    savingCardCode ||
+                    !cardCodePattern.includes('{NUMBER}') ||
+                    !cardCodePattern.trim()
+                  }
+                  onClick={() => void handleSaveCardCode()}
+                >
+                  {savingCardCode ? 'Saving…' : cardCodeSaved ? 'Saved' : 'Save'}
+                </Button>
+              </div>
+              <div id="card-code-help" className={styles.fieldHelp}>
+                Use {'{PROJECT}'}, {'{PROJECT:N}'} and {'{NUMBER}'}. The code is wrapped in
+                brackets.
+              </div>
+              {cardCodeEnabled && cardCodePattern.includes('{NUMBER}') && (
+                <div className={styles.codePreview}>
+                  Preview: [{renderCodePreview(cardCodePattern, projectName, nextCardNumber)}]
+                  Implement backend API
+                </div>
+              )}
+            </section>
           )}
 
           <div className={styles.sectionTitle}>

@@ -19,6 +19,7 @@ import { AddProjectMemberDto } from './dto/add-project-member.dto';
 import { UpdateProjectMemberRoleDto } from './dto/update-project-member-role.dto';
 import { CreateInviteDto } from './dto/create-invite.dto';
 import { SaveShareLinkDto } from './dto/save-share-link.dto';
+import { UpdateCardCodeSettingsDto } from './dto/update-card-code-settings.dto';
 import { ProjectPermissionGuard } from '../../common/guards/project-permission.guard';
 import { RequireProjectPermission } from '../../common/decorators/project-permission.decorator';
 import { ProjectPermissionLevel } from './project-member.entity';
@@ -53,6 +54,13 @@ export class ProjectsController {
   @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
   remove(@Param('id') id: string) {
     return this.service.remove(id);
+  }
+
+  @Patch(':id/card-code-settings')
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  updateCardCodeSettings(@Param('id') id: string, @Body() dto: UpdateCardCodeSettingsDto) {
+    return this.service.updateCardCodeSettings(id, dto);
   }
 
   @Get(':id/board')
