@@ -69,6 +69,11 @@ export const api = {
   createProject: (data: { name: string }) =>
     fetchJson<Project>('/projects', { method: 'POST', body: JSON.stringify(data) }),
   deleteProject: (id: string) => fetchJson<void>(`/projects/${id}`, { method: 'DELETE' }),
+  updateCardCodeSettings: (id: string, data: { enabled: boolean; pattern: string }) =>
+    fetchJson<Project>(`/projects/${id}/card-code-settings`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
 
   // Users who can be assigned to cards in a project (owner + members)
   getProjectAssignees: (projectId: string) => fetchJson<User[]>(`/projects/${projectId}/assignees`),

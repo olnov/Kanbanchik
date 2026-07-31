@@ -13,6 +13,9 @@ import { PermissionService } from '../permissions/permission.service';
 const mockProject: Project = {
   id: 'proj-1',
   name: 'Alpha',
+  cardCodeEnabled: true,
+  cardCodePattern: '{PROJECT:4}-{NUMBER}',
+  nextCardNumber: 1,
   createdById: 'user-1',
   creator: null,
   members: [],

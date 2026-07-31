@@ -12,6 +12,9 @@ export interface Project {
   id: string;
   name: string;
   createdById: string | null;
+  cardCodeEnabled: boolean;
+  cardCodePattern: string;
+  nextCardNumber: number;
 }
 
 export interface Stage {

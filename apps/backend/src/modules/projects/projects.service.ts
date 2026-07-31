@@ -18,6 +18,7 @@ import { AddProjectMemberDto } from './dto/add-project-member.dto';
 import { UpdateProjectMemberRoleDto } from './dto/update-project-member-role.dto';
 import { CreateInviteDto } from './dto/create-invite.dto';
 import { SaveShareLinkDto } from './dto/save-share-link.dto';
+import { UpdateCardCodeSettingsDto } from './dto/update-card-code-settings.dto';
 import { DEFAULT_PROJECT_STAGES } from '../../database/project-defaults';
 import { PermissionService } from '../permissions/permission.service';
 import { generateToken } from '../../common/token';
@@ -44,6 +45,13 @@ export class ProjectsService {
 
   findOne(id: string): Promise<Project> {
     return this.projectRepo.findOneByOrFail({ id });
+  }
+
+  async updateCardCodeSettings(id: string, dto: UpdateCardCodeSettingsDto): Promise<Project> {
+    const project = await this.projectRepo.findOneByOrFail({ id });
+    project.cardCodeEnabled = dto.enabled;
+    project.cardCodePattern = dto.pattern.trim();
+    return this.projectRepo.save(project);
   }
 
   async create(dto: CreateProjectDto, createdById: string): Promise<Project> {

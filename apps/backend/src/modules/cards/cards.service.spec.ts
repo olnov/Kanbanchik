@@ -5,12 +5,26 @@ import { CardsService } from './cards.service';
 import { Card } from './card.entity';
 import { PermissionService } from '../permissions/permission.service';
 import { ProjectPermissionLevel } from '../projects/project-member.entity';
+import { CardCodeService } from '../projects/card-code.service';
 
-const makeCard = (id: string, stageId: string, order: number): Card =>
-  ({ id, stageId, order, summary: id, type: 'task', priority: 'medium',
-     projectId: 'proj-1', description: null, dueDate: null, assigneeId: null,
-     project: null as any, stage: null as any, assignee: null,
-     createdAt: new Date(), updatedAt: new Date(), deletedAt: null });
+const makeCard = (id: string, stageId: string, order: number): Card => ({
+  id,
+  stageId,
+  order,
+  summary: id,
+  type: 'task',
+  priority: 'medium',
+  projectId: 'proj-1',
+  description: null,
+  dueDate: null,
+  assigneeId: null,
+  project: null as any,
+  stage: null as any,
+  assignee: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  deletedAt: null,
+});
 
 describe('CardsService', () => {
   let service: CardsService;
@@ -26,6 +40,11 @@ describe('CardsService', () => {
       update: jest.fn(),
       delete: jest.fn(),
     };
+    mockRepo.manager = {
+      transaction: jest.fn(async (callback: (manager: any) => unknown) =>
+        callback({ getRepository: jest.fn().mockReturnValue(mockRepo) }),
+      ),
+    };
     mockPermissionService = {
       getUserProjectPermission: jest.fn().mockResolvedValue(ProjectPermissionLevel.COLLABORATOR),
     };
@@ -35,6 +54,10 @@ describe('CardsService', () => {
         CardsService,
         { provide: getRepositoryToken(Card), useValue: mockRepo },
         { provide: PermissionService, useValue: mockPermissionService },
+        {
+          provide: CardCodeService,
+          useValue: { addCodes: jest.fn(async (_repo, _projectId, summaries) => summaries) },
+        },
       ],
     }).compile();
     service = module.get(CardsService);
@@ -42,12 +65,18 @@ describe('CardsService', () => {
 
   describe('assignee validation', () => {
     it('rejects creating a card assigned to a viewer', async () => {
-      mockPermissionService.getUserProjectPermission.mockResolvedValue(ProjectPermissionLevel.VIEWER);
+      mockPermissionService.getUserProjectPermission.mockResolvedValue(
+        ProjectPermissionLevel.VIEWER,
+      );
       mockRepo.find.mockResolvedValue([]);
       await expect(
         service.create({
-          summary: 'X', type: 'task', priority: 'medium',
-          projectId: 'proj-1', stageId: 'stage-1', assigneeId: 'viewer-1',
+          summary: 'X',
+          type: 'task',
+          priority: 'medium',
+          projectId: 'proj-1',
+          stageId: 'stage-1',
+          assigneeId: 'viewer-1',
         }),
       ).rejects.toBeInstanceOf(BadRequestException);
       expect(mockRepo.save).not.toHaveBeenCalled();
@@ -57,28 +86,40 @@ describe('CardsService', () => {
       mockPermissionService.getUserProjectPermission.mockResolvedValue(null);
       await expect(
         service.create({
-          summary: 'X', type: 'task', priority: 'medium',
-          projectId: 'proj-1', stageId: 'stage-1', assigneeId: 'stranger',
+          summary: 'X',
+          type: 'task',
+          priority: 'medium',
+          projectId: 'proj-1',
+          stageId: 'stage-1',
+          assigneeId: 'stranger',
         }),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it('allows creating a card assigned to a collaborator', async () => {
-      mockPermissionService.getUserProjectPermission.mockResolvedValue(ProjectPermissionLevel.COLLABORATOR);
+      mockPermissionService.getUserProjectPermission.mockResolvedValue(
+        ProjectPermissionLevel.COLLABORATOR,
+      );
       mockRepo.find.mockResolvedValue([]);
       await service.create({
-        summary: 'X', type: 'task', priority: 'medium',
-        projectId: 'proj-1', stageId: 'stage-1', assigneeId: 'collab-1',
+        summary: 'X',
+        type: 'task',
+        priority: 'medium',
+        projectId: 'proj-1',
+        stageId: 'stage-1',
+        assigneeId: 'collab-1',
       });
       expect(mockRepo.save).toHaveBeenCalled();
     });
 
     it('rejects updating a card to assign a viewer', async () => {
       mockRepo.findOneByOrFail.mockResolvedValue(makeCard('card-1', 'stage-1', 0));
-      mockPermissionService.getUserProjectPermission.mockResolvedValue(ProjectPermissionLevel.VIEWER);
-      await expect(
-        service.update('card-1', { assigneeId: 'viewer-1' }),
-      ).rejects.toBeInstanceOf(BadRequestException);
+      mockPermissionService.getUserProjectPermission.mockResolvedValue(
+        ProjectPermissionLevel.VIEWER,
+      );
+      await expect(service.update('card-1', { assigneeId: 'viewer-1' })).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
       expect(mockRepo.update).not.toHaveBeenCalled();
     });
   });
@@ -94,10 +135,8 @@ describe('CardsService', () => {
 
       mockRepo.findOneByOrFail.mockResolvedValue(movingCard);
       // cards in target stage (excluding moving card)
-      mockRepo.find.mockResolvedValue(cards.filter(c => c.id !== 'card-b'));
-      mockRepo.save.mockImplementation((entities: any[]) =>
-        Promise.resolve(entities),
-      );
+      mockRepo.find.mockResolvedValue(cards.filter((c) => c.id !== 'card-b'));
+      mockRepo.save.mockImplementation((entities: any[]) => Promise.resolve(entities));
       mockRepo.findOneByOrFail.mockResolvedValueOnce(movingCard);
 
       await service.move('card-b', { stageId: 'stage-1', order: 0 });

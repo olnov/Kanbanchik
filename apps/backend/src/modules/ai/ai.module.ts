@@ -8,9 +8,11 @@ import { GroqAiProvider } from './providers/groq.provider';
 import { AiService } from './ai.service';
 import { AiController } from './ai.controller';
 import { PermissionsModule } from '../permissions/permissions.module';
+import { Project } from '../projects/project.entity';
+import { ProjectsModule } from '../projects/projects.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Card]), PermissionsModule],
+  imports: [TypeOrmModule.forFeature([Card, Project]), PermissionsModule, ProjectsModule],
   providers: [
     {
       provide: AI_PROVIDER,

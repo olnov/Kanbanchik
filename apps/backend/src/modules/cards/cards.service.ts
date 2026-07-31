@@ -7,6 +7,8 @@ import { UpdateCardDto } from './dto/update-card.dto';
 import { MoveCardDto } from './dto/move-card.dto';
 import { PermissionService } from '../permissions/permission.service';
 import { ProjectPermissionLevel } from '../projects/project-member.entity';
+import { Project } from '../projects/project.entity';
+import { CardCodeService } from '../projects/card-code.service';
 
 @Injectable()
 export class CardsService {
@@ -14,6 +16,7 @@ export class CardsService {
     @InjectRepository(Card)
     private readonly repo: Repository<Card>,
     private readonly permissionService: PermissionService,
+    private readonly cardCodeService: CardCodeService,
   ) {}
 
   // Viewers (and non-members) can read the board but must not be assigned cards.
@@ -28,13 +31,20 @@ export class CardsService {
     if (dto.assigneeId) {
       await this.assertAssignable(dto.assigneeId, dto.projectId);
     }
-    const stageCards = await this.repo.find({
-      where: { stageId: dto.stageId },
-      order: { order: 'DESC' },
-      take: 1,
+    return this.repo.manager.transaction(async (manager) => {
+      const cardRepo = manager.getRepository(Card);
+      const projectRepo = manager.getRepository(Project);
+      const stageCards = await cardRepo.find({
+        where: { stageId: dto.stageId },
+        order: { order: 'DESC' },
+        take: 1,
+      });
+      const order = stageCards.length > 0 ? stageCards[0].order + 100 : 0;
+      const [summary] = await this.cardCodeService.addCodes(projectRepo, dto.projectId, [
+        dto.summary,
+      ]);
+      return cardRepo.save(cardRepo.create({ ...dto, summary, order }));
     });
-    const order = stageCards.length > 0 ? stageCards[0].order + 100 : 0;
-    return this.repo.save(this.repo.create({ ...dto, order }));
   }
 
   async update(id: string, dto: UpdateCardDto): Promise<Card> {
