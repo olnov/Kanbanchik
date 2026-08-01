@@ -17,6 +17,11 @@ export interface Project {
   nextCardNumber: number;
 }
 
+export interface CardCodeBackfillResult {
+  updatedCount: number;
+  nextCardNumber: number;
+}
+
 export interface Stage {
   id: string;
   name: string;

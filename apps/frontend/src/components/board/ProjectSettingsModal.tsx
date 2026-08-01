@@ -73,9 +73,13 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
   const [createdById, setCreatedById] = useState<string | null>(null);
   const [cardCodeEnabled, setCardCodeEnabled] = useState(true);
   const [cardCodePattern, setCardCodePattern] = useState('{PROJECT:4}-{NUMBER}');
+  const [savedCardCodeEnabled, setSavedCardCodeEnabled] = useState(true);
+  const [savedCardCodePattern, setSavedCardCodePattern] = useState('{PROJECT:4}-{NUMBER}');
   const [nextCardNumber, setNextCardNumber] = useState(1);
   const [savingCardCode, setSavingCardCode] = useState(false);
   const [cardCodeSaved, setCardCodeSaved] = useState(false);
+  const [backfillingCardCodes, setBackfillingCardCodes] = useState(false);
+  const [cardCodeBackfillResult, setCardCodeBackfillResult] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState('');
   const [newRole, setNewRole] = useState<ProjectPermissionLevel>('viewer');
   const [error, setError] = useState<string | null>(null);
@@ -90,6 +94,8 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
     setCreatedById(boardData.project.createdById);
     setCardCodeEnabled(boardData.project.cardCodeEnabled);
     setCardCodePattern(boardData.project.cardCodePattern);
+    setSavedCardCodeEnabled(boardData.project.cardCodeEnabled);
+    setSavedCardCodePattern(boardData.project.cardCodePattern);
     setNextCardNumber(boardData.project.nextCardNumber);
     setMembers(membersData.members);
     setInvites(membersData.invites);
@@ -120,6 +126,10 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
   }, [myPermission, projectId]);
 
   const isAdmin = myPermission === 'admin';
+  const cardCodeSettingsDirty =
+    cardCodeEnabled !== savedCardCodeEnabled || cardCodePattern !== savedCardCodePattern;
+  const cardCodePatternValid =
+    cardCodePattern.trim().length > 0 && cardCodePattern.includes('{NUMBER}');
   const owner = useMemo(
     () => allUsers.find((u) => u.id === createdById) ?? null,
     [allUsers, createdById],
@@ -233,6 +243,8 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
       });
       setCardCodeEnabled(project.cardCodeEnabled);
       setCardCodePattern(project.cardCodePattern);
+      setSavedCardCodeEnabled(project.cardCodeEnabled);
+      setSavedCardCodePattern(project.cardCodePattern);
       setNextCardNumber(project.nextCardNumber);
       setCardCodeSaved(true);
       onChange?.();
@@ -240,6 +252,27 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
       setError(err instanceof Error ? err.message : 'Failed to update card codes');
     } finally {
       setSavingCardCode(false);
+    }
+  };
+
+  const handleBackfillCardCodes = async () => {
+    if (!window.confirm('Generate codes for all existing cards without one?')) return;
+    setError(null);
+    setCardCodeBackfillResult(null);
+    setBackfillingCardCodes(true);
+    try {
+      const result = await api.backfillCardCodes(projectId);
+      setNextCardNumber(result.nextCardNumber);
+      setCardCodeBackfillResult(
+        result.updatedCount > 0
+          ? `Generated codes for ${result.updatedCount} cards`
+          : 'All existing cards already have codes',
+      );
+      onChange?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate card codes');
+    } finally {
+      setBackfillingCardCodes(false);
     }
   };
 
@@ -320,6 +353,7 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
                   onChange={(event) => {
                     setCardCodeEnabled(event.target.checked);
                     setCardCodeSaved(false);
+                    setCardCodeBackfillResult(null);
                   }}
                 />
                 Add a generated code to new card titles
@@ -337,6 +371,7 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
                   onChange={(event) => {
                     setCardCodePattern(event.target.value);
                     setCardCodeSaved(false);
+                    setCardCodeBackfillResult(null);
                   }}
                   aria-describedby="card-code-help"
                 />
@@ -358,9 +393,28 @@ export function ProjectSettingsModal({ projectId, onClose, onChange }: ProjectSe
               {cardCodeEnabled && cardCodePattern.includes('{NUMBER}') && (
                 <div className={styles.codePreview}>
                   Preview: [{renderCodePreview(cardCodePattern, projectName, nextCardNumber)}]
-                  Implement backend API
                 </div>
               )}
+              <div className={styles.cardCodeBackfill}>
+                <Button
+                  variant="ghost"
+                  disabled={
+                    backfillingCardCodes ||
+                    savingCardCode ||
+                    !cardCodeEnabled ||
+                    !cardCodePatternValid ||
+                    cardCodeSettingsDirty
+                  }
+                  onClick={() => void handleBackfillCardCodes()}
+                >
+                  {backfillingCardCodes ? 'Generating…' : 'Generate codes for existing cards'}
+                </Button>
+                {cardCodeBackfillResult && (
+                  <div className={styles.cardCodeResult} role="status">
+                    {cardCodeBackfillResult}
+                  </div>
+                )}
+              </div>
             </section>
           )}
 
