@@ -10,6 +10,7 @@ import type {
   ProjectInvite,
   ShareLink,
   JoinPreview,
+  CardCodeBackfillResult,
 } from './types';
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1';
@@ -73,6 +74,10 @@ export const api = {
     fetchJson<Project>(`/projects/${id}/card-code-settings`, {
       method: 'PATCH',
       body: JSON.stringify(data),
+    }),
+  backfillCardCodes: (projectId: string) =>
+    fetchJson<CardCodeBackfillResult>(`/projects/${projectId}/card-codes/backfill`, {
+      method: 'POST',
     }),
 
   // Users who can be assigned to cards in a project (owner + members)

@@ -207,3 +207,15 @@
   font-family: monospace;
   font-size: 12px;
 }
+
+.cardCodeBackfill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cardCodeResult {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
