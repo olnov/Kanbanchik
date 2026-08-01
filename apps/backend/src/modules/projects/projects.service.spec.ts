@@ -305,8 +305,8 @@ describe('ProjectsService', () => {
       txProjectRepo.findOneOrFail.mockResolvedValue(lockedProject);
       txCardRepo.find.mockResolvedValue([
         { id: 'card-1', summary: '[ALPH-2] Existing' },
-        { id: 'card-2', summary: 'First uncoded' },
-        { id: 'card-3', summary: 'Second uncoded' },
+        { id: 'card-2', summary: 'First uncoded', priority: 'high' },
+        { id: 'card-3', summary: 'Second uncoded', priority: 'low' },
       ]);
 
       await expect(service.backfillCardCodes('proj-1')).resolves.toEqual({
@@ -322,8 +322,8 @@ describe('ProjectsService', () => {
         order: { createdAt: 'ASC', id: 'ASC' },
       });
       expect(txCardRepo.save).toHaveBeenCalledWith([
-        expect.objectContaining({ id: 'card-2', summary: '[ALPH-7] First uncoded' }),
-        expect.objectContaining({ id: 'card-3', summary: '[ALPH-8] Second uncoded' }),
+        { id: 'card-2', summary: '[ALPH-7] First uncoded' },
+        { id: 'card-3', summary: '[ALPH-8] Second uncoded' },
       ]);
       expect(txProjectRepo.save).toHaveBeenCalledWith(
         expect.objectContaining({ nextCardNumber: 9 }),

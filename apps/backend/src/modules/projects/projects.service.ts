@@ -87,7 +87,7 @@ export class ProjectsService {
         uncodedCards.map((card) => card.summary),
       );
       await cardRepo.save(
-        uncodedCards.map((card, index) => ({ ...card, summary: summaries[index] })),
+        uncodedCards.map((card, index) => ({ id: card.id, summary: summaries[index] })),
       );
       await projectRepo.save(project);
 
