@@ -63,6 +63,13 @@ export class ProjectsController {
     return this.service.updateCardCodeSettings(id, dto);
   }
 
+  @Post(':id/card-codes/backfill')
+  @UseGuards(ProjectPermissionGuard)
+  @RequireProjectPermission(ProjectPermissionLevel.ADMIN)
+  backfillCardCodes(@Param('id') id: string) {
+    return this.service.backfillCardCodes(id);
+  }
+
   @Get(':id/board')
   @UseGuards(ProjectPermissionGuard)
   @RequireProjectPermission(ProjectPermissionLevel.VIEWER)

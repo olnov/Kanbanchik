@@ -22,6 +22,7 @@ import { UpdateCardCodeSettingsDto } from './dto/update-card-code-settings.dto';
 import { DEFAULT_PROJECT_STAGES } from '../../database/project-defaults';
 import { PermissionService } from '../permissions/permission.service';
 import { generateToken } from '../../common/token';
+import { applyCardCodes, hasCardCode } from './card-code.service';
 
 @Injectable()
 export class ProjectsService {
@@ -52,6 +53,49 @@ export class ProjectsService {
     project.cardCodeEnabled = dto.enabled;
     project.cardCodePattern = dto.pattern.trim();
     return this.projectRepo.save(project);
+  }
+
+  async backfillCardCodes(
+    projectId: string,
+  ): Promise<{ updatedCount: number; nextCardNumber: number }> {
+    return this.projectRepo.manager.transaction(async (manager) => {
+      const projectRepo = manager.getRepository(Project);
+      const cardRepo = manager.getRepository(Card);
+      const project = await projectRepo.findOneOrFail({
+        where: { id: projectId },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!project.cardCodeEnabled) {
+        throw new BadRequestException('Card code generation is disabled');
+      }
+      if (!project.cardCodePattern.trim() || !project.cardCodePattern.includes('{NUMBER}')) {
+        throw new BadRequestException('Card code pattern must contain {NUMBER}');
+      }
+
+      const cards = await cardRepo.find({
+        where: { projectId },
+        order: { createdAt: 'ASC', id: 'ASC' },
+      });
+      const uncodedCards = cards.filter((card) => !hasCardCode(card.summary));
+      if (uncodedCards.length === 0) {
+        return { updatedCount: 0, nextCardNumber: project.nextCardNumber };
+      }
+
+      const summaries = applyCardCodes(
+        project,
+        uncodedCards.map((card) => card.summary),
+      );
+      await cardRepo.save(
+        uncodedCards.map((card, index) => ({ ...card, summary: summaries[index] })),
+      );
+      await projectRepo.save(project);
+
+      return {
+        updatedCount: uncodedCards.length,
+        nextCardNumber: project.nextCardNumber,
+      };
+    });
   }
 
   async create(dto: CreateProjectDto, createdById: string): Promise<Project> {

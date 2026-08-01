@@ -23,6 +23,7 @@ const mockProject: Project = {
 };
 
 const txProjectRepo = {
+  findOneOrFail: jest.fn().mockResolvedValue(mockProject),
   findOneByOrFail: jest.fn().mockResolvedValue(mockProject),
   softDelete: jest.fn().mockResolvedValue(undefined),
   create: jest.fn().mockImplementation((v) => v),
@@ -40,7 +41,11 @@ const txStageRepo = {
   save: jest.fn(),
   softDelete: jest.fn().mockResolvedValue(undefined),
 };
-const txCardRepo = { softDelete: jest.fn().mockResolvedValue(undefined) };
+const txCardRepo = {
+  find: jest.fn().mockResolvedValue([]),
+  save: jest.fn().mockImplementation((cards) => Promise.resolve(cards)),
+  softDelete: jest.fn().mockResolvedValue(undefined),
+};
 
 const mockRepo = {
   findBy: jest.fn().mockResolvedValue([mockProject]),
@@ -93,7 +98,11 @@ describe('ProjectsService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    txProjectRepo.findOneOrFail.mockResolvedValue(mockProject);
     txProjectRepo.findOneByOrFail.mockResolvedValue(mockProject);
+    txProjectRepo.save.mockResolvedValue(mockProject);
+    txCardRepo.find.mockResolvedValue([]);
+    txCardRepo.save.mockImplementation((cards) => Promise.resolve(cards));
     mockPermissionService.getAccessibleProjectIds.mockResolvedValue(['proj-1']);
     mockInviteRepo.findOne.mockResolvedValue(null);
     mockInviteRepo.find.mockResolvedValue([]);
@@ -287,6 +296,64 @@ describe('ProjectsService', () => {
       );
       const saved = mockShareLinkRepo.save.mock.calls[0][0];
       expect(saved.token).not.toBe('old-token');
+    });
+  });
+
+  describe('backfillCardCodes', () => {
+    it('codes only uncoded cards in deterministic repository order', async () => {
+      const lockedProject = { ...mockProject, nextCardNumber: 7 };
+      txProjectRepo.findOneOrFail.mockResolvedValue(lockedProject);
+      txCardRepo.find.mockResolvedValue([
+        { id: 'card-1', summary: '[ALPH-2] Existing' },
+        { id: 'card-2', summary: 'First uncoded' },
+        { id: 'card-3', summary: 'Second uncoded' },
+      ]);
+
+      await expect(service.backfillCardCodes('proj-1')).resolves.toEqual({
+        updatedCount: 2,
+        nextCardNumber: 9,
+      });
+      expect(txProjectRepo.findOneOrFail).toHaveBeenCalledWith({
+        where: { id: 'proj-1' },
+        lock: { mode: 'pessimistic_write' },
+      });
+      expect(txCardRepo.find).toHaveBeenCalledWith({
+        where: { projectId: 'proj-1' },
+        order: { createdAt: 'ASC', id: 'ASC' },
+      });
+      expect(txCardRepo.save).toHaveBeenCalledWith([
+        expect.objectContaining({ id: 'card-2', summary: '[ALPH-7] First uncoded' }),
+        expect.objectContaining({ id: 'card-3', summary: '[ALPH-8] Second uncoded' }),
+      ]);
+      expect(txProjectRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ nextCardNumber: 9 }),
+      );
+    });
+
+    it('does not write or advance the counter when every card is coded', async () => {
+      const lockedProject = { ...mockProject, nextCardNumber: 7 };
+      txProjectRepo.findOneOrFail.mockResolvedValue(lockedProject);
+      txCardRepo.find.mockResolvedValue([{ id: 'card-1', summary: '[ALPH-2] Existing' }]);
+
+      await expect(service.backfillCardCodes('proj-1')).resolves.toEqual({
+        updatedCount: 0,
+        nextCardNumber: 7,
+      });
+      expect(txCardRepo.save).not.toHaveBeenCalled();
+      expect(txProjectRepo.save).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      [{ cardCodeEnabled: false }, 'Card code generation is disabled'],
+      [{ cardCodePattern: 'ALPHA' }, 'Card code pattern must contain {NUMBER}'],
+      [{ cardCodePattern: '   ' }, 'Card code pattern must contain {NUMBER}'],
+    ])('rejects invalid persisted settings without writes', async (overrides, message) => {
+      txProjectRepo.findOneOrFail.mockResolvedValue({ ...mockProject, ...overrides });
+
+      await expect(service.backfillCardCodes('proj-1')).rejects.toThrow(message);
+      expect(txCardRepo.find).not.toHaveBeenCalled();
+      expect(txCardRepo.save).not.toHaveBeenCalled();
+      expect(txProjectRepo.save).not.toHaveBeenCalled();
     });
   });
 });
