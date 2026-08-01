@@ -1,4 +1,4 @@
-import { CardCodeService, renderCardCode } from './card-code.service';
+import { applyCardCodes, CardCodeService, hasCardCode, renderCardCode } from './card-code.service';
 import { Project } from './project.entity';
 
 const project = {
@@ -10,6 +10,26 @@ const project = {
 } as Project;
 
 describe('CardCodeService', () => {
+  it.each([
+    ['[PROD-1] Existing', true],
+    ['[] Empty token', false],
+    ['[PROD\n-1] Existing', false],
+    ['[PROD-1]Existing', false],
+    ['Plain title', false],
+  ])('detects generated-code format in %j', (summary, expected) => {
+    expect(hasCardCode(summary)).toBe(expected);
+  });
+
+  it('applies consecutive codes and advances the in-memory counter', () => {
+    const target = { ...project, nextCardNumber: 4 };
+
+    expect(applyCardCodes(target, ['First', 'Second'])).toEqual([
+      '[PROD-4] First',
+      '[PROD-5] Second',
+    ]);
+    expect(target.nextCardNumber).toBe(6);
+  });
+
   it('renders the default project prefix in uppercase', () => {
     expect(renderCardCode('{PROJECT:4}-{NUMBER}', 'Product roadmap', 12)).toBe('PROD-12');
   });
