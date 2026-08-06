@@ -1,0 +1,72 @@
+networks:
+  kanbanchik:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - kanbanchik
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      POSTGRES_CONNECTION_URL: ${POSTGRES_CONNECTION_URL}
+      DATABASE_URL: ${DATABASE_URL}
+      PORT: ${BACKEND_PORT}
+      AUTO_SEED_DEMO: ${AUTO_SEED_DEMO}
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      CORS_METHODS: ${CORS_METHODS}
+      MATTERMOST_ENABLED: ${MATTERMOST_ENABLED}
+      MATTERMOST_URL: ${MATTERMOST_URL}
+      GITLAB_ENABLED: ${GITLAB_ENABLED}
+      GITLAB_URL: ${GITLAB_URL}
+      GITLAB_CLIENT_ID: ${GITLAB_CLIENT_ID}
+      GITLAB_CLIENT_SECRET: ${GITLAB_CLIENT_SECRET}
+      GITLAB_REDIRECT_URI: ${GITLAB_REDIRECT_URI}
+      FRONTEND_URL: ${FRONTEND_URL}
+    ports:
+      - '${BACKEND_PORT}:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - kanbanchik
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_MATTERMOST_ENABLED: ${NEXT_PUBLIC_MATTERMOST_ENABLED}
+        NEXT_PUBLIC_GITLAB_ENABLED: ${NEXT_PUBLIC_GITLAB_ENABLED}
+    restart: unless-stopped
+    ports:
+      - '${FRONTEND_PORT}:3000'
+    depends_on:
+      - backend
+    networks:
+      - kanbanchik
+
+volumes:
+  postgres_data:
