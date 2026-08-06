@@ -13,11 +13,11 @@ Kanbanchik is a small kanban workspace built as a pnpm monorepo. It includes a N
 
 ## What is in the repo
 
-- `apps/frontend` - Next.js 16 application served on `http://localhost:3000`
-- `apps/backend` - NestJS + TypeORM API served on `http://localhost:3001/api/v1`
+- `apps/frontend` - Next.js 16 application; its local dev server uses `http://localhost:3000`
+- `apps/backend` - NestJS + TypeORM API; its local dev server uses `http://localhost:3001/api/v1`
 - `apps/electron` - Electron wrapper for desktop packaging
-- `docker-compose.yml` - full local stack: frontend, backend, postgres
-- `docker-compose.infra.yml` - postgres only, useful for local development with separate app processes
+- `docker-compose.yml` - production-oriented stack behind Caddy
+- `docker-compose.infra.yml` - Postgres only for local development with separate app processes
 
 ## Current capabilities
 
@@ -27,7 +27,7 @@ Kanbanchik is a small kanban workspace built as a pnpm monorepo. It includes a N
 - Demo bootstrap for empty development databases
 - AI import of backlog items from a project specification
 - Deterministic extraction of markdown task sections shaped like `## Task: ...`
-- Swagger docs at `http://localhost:3001/api/docs`
+- Swagger docs at `/api/docs` through Caddy or `http://localhost:3001/api/docs` during local backend development
 
 ## Tech stack
 
@@ -40,7 +40,7 @@ Kanbanchik is a small kanban workspace built as a pnpm monorepo. It includes a N
 
 MIT. See [LICENSE](./LICENSE).
 
-## Quick start with Docker
+## Full stack with Docker
 
 1. Install Docker and Docker Compose.
 2. Create a root `.env` from [`.env.example`](./.env.example).
@@ -50,14 +50,18 @@ MIT. See [LICENSE](./LICENSE).
 docker compose up --build
 ```
 
-Services:
+The stack is served through Caddy:
 
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:3001/api/v1`
-- Swagger: `http://localhost:3001/api/docs`
-- Postgres: `localhost:5432`
+- Frontend: `http://localhost`
+- Backend API: `http://localhost/api/v1`
+- Swagger: `http://localhost/api/docs`
 
-The Docker backend starts with `AUTO_SEED_DEMO=true`, so an empty database is populated with demo users, a demo project, stages, and cards.
+PostgreSQL, the backend, and the frontend do not publish host ports. Caddy is
+the only public entry point. Demo seeding is disabled by default in the root
+environment example.
+
+For a VPS deployment, including initial access by IP and the later switch to a
+domain with automatic HTTPS, follow the [VPS deployment guide](./docs/deployment-vps.md).
 
 ## Local development
 
@@ -75,7 +79,8 @@ pnpm install
 
 ### Start only Postgres
 
-Create a root `.env` from [`.env.example`](./.env.example), then run:
+Create a root `.env` from [`.env.example`](./.env.example), then run the
+local-development-only infrastructure compose file:
 
 ```bash
 docker compose -f docker-compose.infra.yml up -d
